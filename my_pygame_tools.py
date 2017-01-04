@@ -1,0 +1,230 @@
+# farbod shahinfar
+# MyPyGameTools
+# version 0.000beta
+# last update : 6/10/95
+from __future__ import division
+import pygame
+from math import atan, degrees
+import exceptions
+
+
+class Colors:
+    """
+    this class attributes are RGB value for colors
+    this helps to avoid giving a tuple of (R, G, B)
+    and instead say Colors.color which makes more sense
+    """
+    def __init__(self):
+        #                    R    G    B
+        self.WHITE       = (255, 255, 255)
+        self.GRAY        = (185, 185, 185)
+        self.BLACK       = (  0,   0,   0)
+        self.RED         = (155,   0,   0)
+        self.LIGHTRED    = (175,  20,  20)
+        self.GREEN       = (  0, 155,   0)
+        self.LIGHTGREEN  = ( 20, 175,  20)
+        self.BLUE        = (  0,   0, 155)
+        self.LIGHTBLUE   = ( 20,  20, 175)
+        self.YELLOW      = (155, 155,   0)
+        self.LIGHTYELLOW = (175, 175,  20)
+
+
+class Key(object):
+    def __init__(self, name):
+            self.key_name = name
+            self.key_hold = False
+
+    def __eq__(self, other):
+        if isinstance(other, Key):
+            return self.is_key(other.key_name)
+
+    def get_key(self):
+        return self.key_name
+
+    def change_key(self, looking):
+        self.key_name = looking
+
+    def is_key(self, name):
+        if self.key_name == name:
+            return True
+        return False
+
+    def set_key_down(self):
+        self.key_hold = True
+
+    def set_key_up(self):
+        self.key_hold = False
+
+    def check_event_key_down(self, event):
+        if pygame.key.name(event.key) == self.key_name:
+            self.key_hold = True
+            return True
+        return False
+    
+    def check_event_key_up(self, event):
+        if pygame.key.name(event.key) == self.key_name:
+            self.key_hold = False
+            return True
+        return False
+    
+    def check_hold(self):
+        return self.key_hold
+
+
+class KeyboardHandler(object):
+    def __init__(self):
+        self.connected_keys = {}
+    
+    def connect_keys(self, *params):
+        """
+        :param params: name of the key (string)
+        :return:
+        """
+        for item in params:
+            key = Key(item)
+            self.connected_keys[item] = key
+
+    def is_key_connected(self, key_name):
+        if key_name in self.connected_keys:
+            return True
+        return False
+
+    def get_key(self, key_name):
+        if key_name in self.connected_keys:
+            return self.connected_keys[key_name]
+
+    def get_events(self, events):
+        for event in events:
+            if event.type == pygame.KEYDOWN:
+                key_name = pygame.key.name(event.key)
+                if self.is_key_connected(key_name):
+                    self.connected_keys[key_name].set_key_down()
+            elif event.type == pygame.KEYUP:
+                key_name = pygame.key.name(event.key)
+                if self.is_key_connected(key_name):
+                    self.connected_keys[key_name].set_key_up()
+
+    def get_event(self, event):
+        if event.type == pygame.KEYDOWN:
+            key_name = pygame.key.name(event.key)
+            if self.is_key_connected(key_name):
+                self.connected_keys[key_name].set_key_down()
+        elif event.type == pygame.KEYUP:
+            key_name = pygame.key.name(event.key)
+            if self.is_key_connected(key_name):
+                self.connected_keys[key_name].set_key_up()
+
+    def is_key_hold(self, key_name):
+        if key_name in self.connected_keys:
+            return self.connected_keys[key_name].check_hold()
+
+
+class Mouse(object):
+    def __init__(self):
+        self.btn1 = False
+        self.btn1Pressed = False
+        self.btn2 = False
+        self.btn2Pressed = False
+
+    def get_pos(self):
+        return pygame.mouse.get_pos()
+
+    def event_btn_pressed(self, event):
+        if event.button == 1:
+            self.btn1 = True
+            self.btn1Pressed = True
+        else:
+            self.btn2 = True
+            self.btn2Pressed = True
+
+    def event_btn_released(self, event):
+        if event.button == 1:
+            self.btn1 = False
+            self.btn1Pressed = False
+        else:
+            self.btn2 = False
+            self.btn2Pressed = False
+        
+    def is_btn_pressed(self, num):
+        n = int(num)
+        ans = None
+        if n == 1:
+            ans = self.btn1Pressed
+        elif n == 2:
+            ans = self.btn2Pressed
+        self.btn1Pressed = False
+        self.btn2Pressed = False
+        return ans
+    
+    def is_btn_hold(self,num):
+        n = int(num)
+        if n == 1:
+            return self.btn1
+        elif n == 2:
+            return self.btn2
+        return None
+
+
+# Screen
+def init_screen(size, caption):
+    scr = pygame.display.set_mode(size)
+    pygame.display.set_caption(caption)
+    return scr
+
+
+# Functions
+def absolute(value):
+    if value < 0:
+        return -1*value
+    return value
+
+
+def sgn(value):
+    if isinstance(value, (int, float)):
+        if value == 0:
+            return 0
+        else:
+            return int(value/absolute(value))
+    else:
+        print("Unsupported Type for function sgn in <my_pygame_tools.py>")
+        raise exceptions.TypeError
+
+
+def is_in_rectangle(pos,rect):
+        if pos[0] > rect[0] and pos[0] < rect[0] + rect[2]:
+            if pos[1] > rect[1] and pos[1]< rect[1] + rect[3]:
+                return True
+        return False
+
+
+def distance(p1, p2):
+    return ((p1[0]-p2[0])**2 + (p1[1]-p2[1])**2)**0.5
+
+
+def get_direction(p1, p2):
+    pi = 3.14159
+    flag_plus_pi = False
+    delta_y = p2[1]-p1[1]
+    delta_x = p2[0]-p1[0]
+    if delta_x == 0:
+        if delta_y > 0:
+            return 90
+        else:
+            return -90
+    if delta_x < 0:
+        flag_plus_pi = True
+    m = delta_y/delta_x
+    if flag_plus_pi:
+        return degrees(atan(m) + pi)
+    return degrees(atan(m))
+
+
+def is_between_two_point(pos, p1, p2):
+    min_x = min(p1[0], p2[0])
+    max_x = max(p1[0], p2[0])
+    width = max_x-min_x
+    min_y = min(p1[1], p2[1])
+    max_y = max(p1[1], p2[1])
+    height = max_y - min_y
+    rect = [min_x, min_y, width, height]
+    return is_in_rectangle(pos, rect)
