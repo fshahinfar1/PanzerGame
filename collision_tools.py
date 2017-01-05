@@ -12,7 +12,7 @@ class CollisionCircle(object):
     def __init__(self, pos, r, link_object=None, solid=False):
         self.position = position_class.Position(pos)
         self.radius = r
-        self.object = link_object
+        self.parent = link_object
         self.solid = solid
         # add object to collidabel objects dictionary
         collidable_objects[self] = self.position
@@ -28,6 +28,12 @@ class CollisionCircle(object):
 
     def set_solid(self):
         self.solid = True
+
+    def get_parent(self):
+        return self.parent
+
+    def set_parent(self, obj):
+        self.parent = obj
 
     def get_radius(self):
         return self.radius
@@ -105,7 +111,7 @@ class CollisionFixRectangle(object):
         self.position = position_class.Position(pos)  # left top corner of rectangle
         self.width = w
         self.height = h
-        self.object = link_object
+        self.parent = link_object
         self.solid = solid
         # add object to collidabel objects dictionary
         collidable_objects[self] = self.position
@@ -121,6 +127,12 @@ class CollisionFixRectangle(object):
 
     def set_solid(self):
         self.solid = True
+
+    def get_parent(self):
+        return self.parent
+
+    def set_parent(self, obj):
+        self.parent = obj
 
     def get_position(self):
         return self.position
@@ -138,8 +150,8 @@ class CollisionFixRectangle(object):
         :param down:
         :return:
         """
-        map_dict = {0: self.position, 1: self.position+(self.width, 0),\
-                   2: self.position + (0, self.height), 3: self.position + (self.width, self.height)
+        map_dict = {0: self.position, 1: self.position+(self.width, 0), 2: self.position + (0, self.height), \
+                    3: self.position + (self.width, self.height)
                     }
         c = 0
         if right:
@@ -190,26 +202,26 @@ class CollisionFixRectangle(object):
         # fixme direction of the panzer will affect this and \
         # fixme there is a huge problem on left side and will moving backward
         dp = 1
-        theta = radians(direction * sgn(self.object.get_speed()))
+        theta = radians(direction * sgn(self.parent.get_speed()))
         while self.is_colliding_with(other):
             self.position -= (dp * cos(theta), dp * sin(theta))
         return self.position
 
 
 # Functions
-def get_object_may_collide(object, range_radius, *args):
+def get_object_may_collide(obj, range_radius, *args):
     result = []
     log = open('log.txt', 'a')
     log.write(str(args)+'\n')
-    if isinstance(object, (CollisionCircle, CollisionFixRectangle)):
+    if isinstance(obj, (CollisionCircle, CollisionFixRectangle)):
         for item in collidable_objects.items():
             if isinstance(item[0], CollisionFixRectangle):
-                if distance(object.get_position(), item[1]) - item[0].get_width() < range_radius:
-                    if (item[0] is not object) and (item[0] not in list(args)):  # exclude object it self and args
+                if distance(obj.get_position(), item[1]) - item[0].get_width() < range_radius:
+                    if (item[0] is not obj) and (item[0] not in list(args)):  # exclude object it self and args
                         result.append(item[0])
             elif isinstance(item[0], CollisionCircle):
-                if distance(object.get_position(), item[1]) < range_radius:
-                    if (item[0] is not object) and (item[0] not in list(args)):  # exclude object it self and args
+                if distance(obj.get_position(), item[1]) < range_radius:
+                    if (item[0] is not obj) and (item[0] not in list(args)):  # exclude object it self and args
                         result.append(item[0])
         return result
 

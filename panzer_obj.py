@@ -101,7 +101,7 @@ class Panzer(object):
         self.collision_obj.set_position(self.position)
 
     def fire(self, bullet_type):
-        bullet = bullet_type(self, self.position, self.direction, room=self.room)
+        bullet = bullet_type(self, self.position, self.direction, speed = 10, room=self.room)
         return bullet
 
 
