@@ -9,10 +9,11 @@ collidable_objects = {}  # a dictionary of all objects of CollisionCircle
 
 class CollisionCircle(object):
 
-    def __init__(self, pos, r, link_object=None):
+    def __init__(self, pos, r, link_object=None, solid=False):
         self.position = position_class.Position(pos)
         self.radius = r
         self.object = link_object
+        self.solid = solid
         # add object to collidabel objects dictionary
         collidable_objects[self] = self.position
 
@@ -21,6 +22,12 @@ class CollisionCircle(object):
 
     def __str__(self):
         return "Circle at {0}".format(self.position)
+
+    def is_solid(self):
+        return self.solid
+
+    def set_solid(self):
+        self.solid = True
 
     def get_radius(self):
         return self.radius
@@ -94,11 +101,12 @@ class CollisionCircle(object):
 
 
 class CollisionFixRectangle(object):
-    def __init__(self, pos, w, h, link_object=None):
+    def __init__(self, pos, w, h, link_object=None, solid=False):
         self.position = position_class.Position(pos)  # left top corner of rectangle
         self.width = w
         self.height = h
         self.object = link_object
+        self.solid = solid
         # add object to collidabel objects dictionary
         collidable_objects[self] = self.position
 
@@ -107,6 +115,12 @@ class CollisionFixRectangle(object):
 
     def __str__(self):
         return "FixRectangle at {0}".format(self.position)
+
+    def is_solid(self):
+        return self.solid
+
+    def set_solid(self):
+        self.solid = True
 
     def get_position(self):
         return self.position
@@ -169,6 +183,9 @@ class CollisionFixRectangle(object):
                 return True
             return False
 
+    # todo Add move to Edge function here
+    # todo this is important
+
     def move_to_edge(self, other, direction):
         # fixme direction of the panzer will affect this and \
         # fixme there is a huge problem on left side and will moving backward
@@ -198,5 +215,6 @@ def get_object_may_collide(object, range_radius, *args):
 
 
 def update_collidable_objects_list_position():
+    # fixme It looks it is not working
     for item in collidable_objects:
         collidable_objects[item] = item.get_position()

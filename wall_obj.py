@@ -15,7 +15,7 @@ class Wall(object):
         self.size = size
         self.direction = direction
         self.pos = position_class.Position(pos)
-        self.collision_obj = collision_tools.CollisionFixRectangle(self.pos, size[0], size[1], self)
+        self.collision_obj = collision_tools.CollisionFixRectangle(self.pos, size[0], size[1], self, solid=True)
 
     def __str__(self):
         return "wall at position {0} with size of {1}; direction = {2}".format(self.pos, self.size, self.direction)

@@ -28,7 +28,7 @@ class Panzer(object):
         self.keyboard = KeyboardHandler()
         self.keyboard.connect_keys('right', 'left', 'up', 'down', 'space')
         # collision
-        self.collision_obj = collision_tools.CollisionCircle(self.position, 27, self)
+        self.collision_obj = collision_tools.CollisionCircle(self.position, 27, self, solid=True)
         # fire
         self.flag_ready_fire = True
         self.timer = timer_obj.Timer(1)
@@ -90,12 +90,13 @@ class Panzer(object):
         temp = [bullet.collision_obj for bullet in self.bullets_list]
         may_collide_list = collision_tools.get_object_may_collide(self.collision_obj, 100, *temp)
         for obj in may_collide_list:
-            if self.collision_obj.will_collide_with_at(obj, new_pos):
-                print(self.speed)
-                print("will collide at {0} with {1}".format(new_pos, str(obj)))
-                self.set_acceleration(0)
-                self.set_speed(0)
-                return
+            if obj.is_solid():  # if other obj is solid to collide
+                if self.collision_obj.will_collide_with_at(obj, new_pos):
+                    print(self.speed)
+                    print("will collide at {0} with {1}".format(new_pos, str(obj)))
+                    self.set_acceleration(0)
+                    self.set_speed(0)
+                    return
         self.position = new_pos
         self.collision_obj.set_position(self.position)
 
