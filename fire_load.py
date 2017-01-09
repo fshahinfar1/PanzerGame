@@ -1,9 +1,10 @@
 # Farbod Shahinfar
-# 13/10/95
+# 20/10/95
 # bouncy fire load
 import pygame
 import position_class
 import collision_tools
+import wall_obj
 from math import radians, sin, cos
 
 
@@ -24,23 +25,38 @@ class BouncyFireLoad(object):
         print('bullet destroy')
         self.collision_obj.destroy()
         self.holder.remove(self)
-        del self
+        del self  # does it do anything or not??
+
+    def calculate_new_position(self):
+        theta = radians(self.direction)
+        return self.position + (self.speed * cos(theta), self.speed * sin(theta))
 
     def update_position(self):
-        theta = radians(self.direction)
-        self.position += (self.speed*cos(theta), self.speed*sin(theta))
+        self.position = self.calculate_new_position()
+        # move collision shell to new position
         self.collision_obj.set_position(self.position)
+        # if ball is out of the room so lets forget about it
         if self.room.is_out_of_room(self.position):
             self.destroy()
 
     def loop(self):
+        # all collision logic of the bullet is here
         self.update_position()
         may_collide_list = collision_tools.get_object_may_collide(self.collision_obj, 30, self.parent.collision_obj)
         for obj in may_collide_list:
             if self.collision_obj.is_colliding_with(obj):
-                self.destroy()
-                print('destroy by {0}'.format(obj))
-                return True  # True means it is time to say goodbye
+                # if bouncy fire load is colliding with wall then it should bounc
+                if isinstance(obj.get_parent(), wall_obj.Wall):
+                    # fixme find a better way to calculate reflaction from surface with angle = theta
+                    self.position = self.collision_obj.move_to_edge(obj, self.direction)
+                    self.direction = 360 - self.direction  # reflect the ball from theta = 0 surface
+                    if self.collision_obj.will_collide_with_at(obj, self.calculate_new_position()):
+                        self.direction = 90 - self.direction  # reflect the ball from theta = 90 surface
+                    break  # stop looking for more collision
+                else:
+                    self.destroy()
+                    print('destroy by {0}'.format(obj))
+                    return True  # True means it is time to say goodbye
         return False
 
     def link_holder(self, holder):

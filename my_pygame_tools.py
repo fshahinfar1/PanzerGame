@@ -1,7 +1,7 @@
 # farbod shahinfar
 # MyPyGameTools
 # version 0.000beta
-# last update : 6/10/95
+# last update : 20/10/95
 from __future__ import division
 import pygame
 from math import atan, degrees
@@ -228,3 +228,12 @@ def is_between_two_point(pos, p1, p2):
     height = max_y - min_y
     rect = [min_x, min_y, width, height]
     return is_in_rectangle(pos, rect)
+
+
+def reflection_angle(collision_angle):
+    """
+
+    :param collision_angle: angle between colliding obj and collided object
+    :return: angle which reflecting obj should have now
+    """
+    return 360 - collision_angle
