@@ -13,13 +13,16 @@ class BouncyFireLoad(object):
         self.parent = parent
         self.size = (16, 16)
         self.image_original = pygame.image.load("./images/bouncy_fire_load.png")
+        # todo it is a good idea to create a class able to handle animation and use it instead
         self.image = pygame.transform.scale(self.image_original, self.size)
-        self.position = position_class.Position(pos)
-        self.speed = speed
-        self.direction = direction
+        self.position = position_class.Position(pos)  # current position of obj
+        self.speed = speed  # moving speed
+        self.direction = direction  # movement direction
         self.collision_obj = collision_tools.CollisionCircle(self.position, 8, self)
-        self.room = room
-        self.holder = holder
+        # todo Do I really need to give the room to object ??
+        self.room = room  # room which this object is in
+        # todo it is a good idea to use a class list instead of list below
+        self.holder = holder  # list in the room which keeps track of this type object
 
     def destroy(self):
         print('bullet destroy')
