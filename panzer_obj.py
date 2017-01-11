@@ -24,9 +24,6 @@ class Panzer(object):
         self.image = pygame.transform.scale(image, size)
         self.size = size
         self.clock = clock
-        # keyboard
-        self.keyboard = KeyboardHandler()
-        self.keyboard.connect_keys('right', 'left', 'up', 'down', 'space')
         # collision
         self.collision_obj = collision_tools.CollisionCircle(self.position, 27, self, solid=True)
         # fire
