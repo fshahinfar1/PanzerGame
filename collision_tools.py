@@ -211,8 +211,6 @@ class CollisionFixRectangle(object):
 # Functions
 def get_object_may_collide(obj, range_radius, *args):
     result = []
-    log = open('log.txt', 'a')
-    log.write(str(args)+'\n')
     if isinstance(obj, (CollisionCircle, CollisionFixRectangle)):
         for item in collidable_objects.items():
             if isinstance(item[0], CollisionFixRectangle):
