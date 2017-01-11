@@ -30,6 +30,10 @@ class Colors:
 
 
 class Key(object):
+    """
+    it represents a key on key board and
+    give me some good functions to check their state
+    """
     def __init__(self, name):
             self.key_name = name
             self.key_hold = False
@@ -77,8 +81,10 @@ class KeyboardHandler(object):
     
     def connect_keys(self, *params):
         """
+        add Key to self.connected_keys for further process
+
         :param params: name of the key (string)
-        :return:
+        :return: None
         """
         for item in params:
             key = Key(item)
@@ -90,10 +96,23 @@ class KeyboardHandler(object):
         return False
 
     def get_key(self, key_name):
+        """
+        if key is connected
+        it will give access to that key
+        :param key_name:
+        :return:
+        """
         if key_name in self.connected_keys:
             return self.connected_keys[key_name]
+        return None
 
     def get_events(self, events):
+        """
+        it will gets all events and loops between
+        events and set values for connected keys
+        :param events:
+        :return:
+        """
         for event in events:
             if event.type == pygame.KEYDOWN:
                 key_name = pygame.key.name(event.key)
@@ -105,6 +124,13 @@ class KeyboardHandler(object):
                     self.connected_keys[key_name].set_key_up()
 
     def get_event(self, event):
+        """
+        it will take an event it is much like get_events() but
+        it is used in a loop it self instead of creating a loop in
+        side of function
+        :param event:
+        :return:
+        """
         if event.type == pygame.KEYDOWN:
             key_name = pygame.key.name(event.key)
             if self.is_key_connected(key_name):
@@ -115,11 +141,27 @@ class KeyboardHandler(object):
                 self.connected_keys[key_name].set_key_up()
 
     def is_key_hold(self, key_name):
+        """
+        with this function I can check connected key state
+        :param key_name:
+        :return:
+        """
         if key_name in self.connected_keys:
             return self.connected_keys[key_name].check_hold()
 
 
 class Mouse(object):
+    """
+        this class handles mouse
+        use event_btn_pressed() and event_btn_released()
+        in events loop and supply them with event
+        it will set values it self
+        you just need to check for thing you want
+        in logic loop
+        use is_btn_hold()
+        num = 1 -> left_btn
+        num = 2 -> right_btn
+    """
     def __init__(self):
         self.btn1 = False
         self.btn1Pressed = False
@@ -150,13 +192,13 @@ class Mouse(object):
         ans = None
         if n == 1:
             ans = self.btn1Pressed
+            self.btn1Pressed = False
         elif n == 2:
             ans = self.btn2Pressed
-        self.btn1Pressed = False
-        self.btn2Pressed = False
+            self.btn2Pressed = False
         return ans
     
-    def is_btn_hold(self,num):
+    def is_btn_hold(self, num):
         n = int(num)
         if n == 1:
             return self.btn1
