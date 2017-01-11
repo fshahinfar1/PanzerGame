@@ -83,12 +83,20 @@ class Panzer(object):
         if self.speed * sgn(acceleration) < speed_limit:
             self.speed += acceleration * self.clock.get_time() / 1000
 
-    def update_position(self):
+    def calculate_directional_position(self, position, speed):
+        """
+        it calculates a new position which has a distance of size speed from the position
+        in direction of this object
+        :param position:
+        :param speed:
+        :return: position_class.Position
+        """
         theta = radians(self.direction)
-        new_pos = position_class.Position(self.position)
-        new_pos += self.speed * cos(theta), self.speed * sin(theta)
-        temp = [bullet.collision_obj for bullet in self.bullets_list]
-        may_collide_list = collision_tools.get_object_may_collide(self.collision_obj, 100, *temp)
+        return position + (speed * cos(theta), speed * sin(theta))
+
+    def update_position(self):
+        new_pos = self.calculate_directional_position(self.position, self.speed)
+        may_collide_list = collision_tools.get_object_may_collide(self.collision_obj, 100)
         for obj in may_collide_list:
             if obj.is_solid():  # if other obj is solid to collide
                 if self.collision_obj.will_collide_with_at(obj, new_pos):
@@ -96,14 +104,15 @@ class Panzer(object):
                     print("will collide at {0} with {1}".format(new_pos, str(obj)))
                     self.set_acceleration(0)
                     self.set_speed(0)
-                    return
+                    return  # Done updating position
         self.position = new_pos
         self.collision_obj.set_position(self.position)
 
     def fire(self, bullet_type):
-        bullet = bullet_type(self, self.position, self.direction, speed = 10, room=self.room)
+        bullet = \
+            bullet_type(self.calculate_directional_position(self.position, 28+abs(self.speed)), self.direction,\
+                        speed=10, room=self.room)
         return bullet
-
 
     def draw(self, screen):
         #

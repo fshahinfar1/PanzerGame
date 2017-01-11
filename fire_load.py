@@ -8,8 +8,7 @@ from math import radians, sin, cos
 
 
 class BouncyFireLoad(object):
-    def __init__(self, parent, pos, direction, speed=2, room=None, holder=None):
-        self.parent = parent
+    def __init__(self, pos, direction, speed=2, room=None, holder=None):
         self.size = (16, 16)
         self.image_original = pygame.image.load("./images/bouncy_fire_load.png")
         self.image = pygame.transform.scale(self.image_original, self.size)
@@ -35,7 +34,7 @@ class BouncyFireLoad(object):
 
     def loop(self):
         self.update_position()
-        may_collide_list = collision_tools.get_object_may_collide(self.collision_obj, 30, self.parent.collision_obj)
+        may_collide_list = collision_tools.get_object_may_collide(self.collision_obj, 30)
         for obj in may_collide_list:
             if self.collision_obj.is_colliding_with(obj):
                 self.destroy()
