@@ -6,6 +6,7 @@ import room_obj
 import panzer_obj
 import wall_obj
 import collision_tools
+import map_obj
 import my_pygame_tools as tools
 cp = tools.Colors()
 
@@ -15,10 +16,12 @@ class TestRoom(room_obj.Room):
         room_obj.Room.__init__(self, 'Test', clock=clock)  # create room with name Test
         panzer_img = pygame.image.load("images/panzer.png")
         self.panzer = panzer_obj.Panzer((80, 80), panzer_img, (54, 54), self.clock, self)
-        self.wall_list = []
-        self.wall_init()
+        # self.wall_list = []
+        # self.wall_init()
+        self.wall_list = map_obj.get_walls("map01.txt")
         self.fire_load_list = []
         self.mouse = tools.Mouse()
+
 
     def wall_init(self):
         wall_img = pygame.image.load("images/wall.png")
