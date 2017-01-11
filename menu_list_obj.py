@@ -12,7 +12,7 @@ class Menu:
     def __init__(self, pos):
         self.label_list = []
         self.count_labels = 0
-        self.pos = position_class.Position(pos[0], pos[1])
+        self.pos = position_class.Position(pos)
         self.size = (0, 0)
         self.padding = [10, 10, 50]  # top, left, between
 
@@ -58,7 +58,7 @@ class Menu:
 
     def mouse_on_index(self, mp):
         if not isinstance(mp, position_class.Position):
-            mp = position_class.Position(mp[0], mp[1])
+            mp = position_class.Position(mp)
         if tools.is_in_rectangle(mp, self.get_rect()):
             for index in range(len(self.label_list)):
                 if self.label_list[index].is_mouse_on():

@@ -13,7 +13,7 @@ class Label:
     def __init__(self, text, pos, color, font=pygame.font.SysFont('serif', 20, True, False), click_able = False):
         self.label_name = text
         self.text_str = text
-        self.pos = position_class.Position(pos[0], pos[1])
+        self.pos = position_class.Position(pos)
         self.color = color
         self.font = font
         self.render = font.render(self.text_str,True,self.color)
