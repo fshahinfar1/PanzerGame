@@ -34,12 +34,11 @@ class BouncyFireLoad(object):
 
     def loop(self):
         self.update_position()
-        may_collide_list = collision_tools.get_object_may_collide(self.collision_obj, 30)
-        for obj in may_collide_list:
-            if self.collision_obj.is_colliding_with(obj):
-                self.destroy()
-                print('destroy by {0}'.format(obj))
-                return True  # True means it is time to say goodbye
+        collide_object = collision_tools.is_colliding(self.collision_obj, self.position, self.collision_obj)
+        if collide_object is not None:
+            self.destroy()
+            print('destroy by {0}'.format(collide_object))
+            return True  # True means it is time to say goodbye
         return False
 
     def link_holder(self, holder):

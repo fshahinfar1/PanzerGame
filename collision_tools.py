@@ -4,17 +4,19 @@
 import position_class
 from my_pygame_tools import distance, sgn
 from math import sin, cos, radians
-collidable_objects = {}  # a dictionary of all objects of CollisionCircle
+# key: object
+#value: position
+collidable_objects = {}  # a dictionary of all objects of collision type
 
 
 class CollisionCircle(object):
 
     def __init__(self, pos, r, link_object=None, solid=False):
-        self.position = position_class.Position(pos)
+        self.position = position_class.Position(pos)  # center position
         self.radius = r
         self.parent = link_object
         self.solid = solid
-        # add object to collidabel objects dictionary
+        # add object to collidabel_objects dictionary
         collidable_objects[self] = self.position
 
     def destroy(self):
@@ -108,7 +110,7 @@ class CollisionCircle(object):
 
 class CollisionFixRectangle(object):
     def __init__(self, pos, w, h, link_object=None, solid=False):
-        self.position = position_class.Position(pos)  # left top corner of rectangle
+        self.position = position_class.Position(pos)  # top left corner of rectangle
         self.width = w
         self.height = h
         self.parent = link_object
@@ -170,6 +172,9 @@ class CollisionFixRectangle(object):
     def get_size(self):
         return self.width, self.height
 
+    def get_rect(self):
+        return [self.position[0], self.position[1], self.width, self.height]
+
     def is_colliding_with(self, other):
         if isinstance(other, CollisionFixRectangle):
             if (self.position[0] < other.position[0] + other.width) and\
@@ -195,7 +200,7 @@ class CollisionFixRectangle(object):
                 return True
             return False
 
-    # todo Add will_collid_at function here
+    # todo Add will_collide_at function here
     # todo this is important
 
     def move_to_edge(self, other, direction):
@@ -209,19 +214,49 @@ class CollisionFixRectangle(object):
 
 
 # Functions
+def is_colliding(obj, pos, *args):
+    """
+    check to see if obj is colliding with any thing in the dictionary of collidable_objects
+    if yes returns colliding object else None is returned
+    it excludes item given as *args when checking dictionary
+    :param obj:
+    :param pos:
+    :param args:
+    :return: collide_object
+    """
+    if not isinstance(obj, (CollisionCircle, CollisionFixRectangle)):
+        print('Type error in function get_object_may_collide in Collision_tools')
+        raise
+    for item in collidable_objects.items():
+        """
+         item is a tuple (collision_object, position_object)
+         so item[0] is collision object
+        """
+        if item[0] not in list(args):
+            if obj.will_collide_with_at(item[0], pos):
+                return item[0]
+    return None
+
+
 def get_object_may_collide(obj, range_radius, *args):
     result = []
-    if isinstance(obj, (CollisionCircle, CollisionFixRectangle)):
-        for item in collidable_objects.items():
-            if isinstance(item[0], CollisionFixRectangle):
-                if distance(obj.get_position(), item[1]) - item[0].get_width() < range_radius:
-                    if (item[0] is not obj) and (item[0] not in list(args)):  # exclude object it self and args
-                        result.append(item[0])
-            elif isinstance(item[0], CollisionCircle):
-                if distance(obj.get_position(), item[1]) < range_radius:
-                    if (item[0] is not obj) and (item[0] not in list(args)):  # exclude object it self and args
-                        result.append(item[0])
-        return result
+    if not isinstance(obj, (CollisionCircle, CollisionFixRectangle)):
+        print('Type error in function get_object_may_collide in Collision_tools')
+        raise
+    for item in collidable_objects.items():
+        """
+        item is a tuple (collision_object, position_object)
+        so item[0] is collision object
+        """
+        if isinstance(item[0], CollisionFixRectangle):
+            if distance(obj.get_position(), item[1]) < range_radius:
+                if item[0] not in list(args):  # exclude args so it wont calculate collision for them
+                    result.append(item[0])
+        elif isinstance(item[0], CollisionCircle):
+            if distance(obj.get_position(), item[1]) < range_radius:
+                if item[0] not in list(args):  # exclude object it self and args
+                    result.append(item[0])
+    return result
 
 
 def update_collidable_objects_list_position():

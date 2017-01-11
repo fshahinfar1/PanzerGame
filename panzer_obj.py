@@ -35,6 +35,9 @@ class Panzer(object):
         self.room = room
         self.bullets_list = []
 
+    def get_collision_obj(self):
+        return self.collision_obj
+
     def get_acceleration(self):
         return self.acceleration
 
@@ -96,15 +99,14 @@ class Panzer(object):
 
     def update_position(self):
         new_pos = self.calculate_directional_position(self.position, self.speed)
-        may_collide_list = collision_tools.get_object_may_collide(self.collision_obj, 100)
-        for obj in may_collide_list:
-            if obj.is_solid():  # if other obj is solid to collide
-                if self.collision_obj.will_collide_with_at(obj, new_pos):
-                    print(self.speed)
-                    print("will collide at {0} with {1}".format(new_pos, str(obj)))
-                    self.set_acceleration(0)
-                    self.set_speed(0)
-                    return  # Done updating position
+        collide_object = collision_tools.is_colliding(self.collision_obj, new_pos, self.collision_obj)
+        if collide_object is not None:
+            if collide_object.is_solid():
+                print(self.speed)
+                print("will collide at {0} with {1}".format(new_pos, str(collide_object)))
+                self.set_acceleration(0)
+                self.set_speed(0)
+                return  # Done updating position
         self.position = new_pos
         self.collision_obj.set_position(self.position)
 
