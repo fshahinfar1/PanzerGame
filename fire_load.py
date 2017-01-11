@@ -48,9 +48,10 @@ class BouncyFireLoad(object):
         if collide_object is not None:
             if isinstance(collide_object.get_parent(), wall_obj.Wall):
                 # fixme find a better way to calculate reflaction from surface with angle = theta
-                self.position = self.collision_obj.move_to_edge(obj, self.direction)
+                self.position = self.collision_obj.move_to_edge(collide_object, self.direction)
                 self.direction = 360 - self.direction  # reflect the ball from theta = 0 surface
-                if self.collision_obj.will_collide_with_at(obj, self.calculate_new_position()):
+                if self.collision_obj.will_collide_with_at(collide_object, self.calculate_new_position()):
+                    # fixme it has problem her!
                     self.direction = 90 - self.direction  # reflect the ball from theta = 90 surface
             else:
                 self.destroy()

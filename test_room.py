@@ -16,19 +16,9 @@ class TestRoom(room_obj.Room):
         room_obj.Room.__init__(self, 'Test', clock=clock)  # create room with name Test
         panzer_img = pygame.image.load("images/panzer.png")
         self.panzer = panzer_obj.Panzer((80, 80), panzer_img, (54, 54), self.clock, self)
-        # self.wall_list = []
-        # self.wall_init()
-        self.wall_list = map_obj.get_walls("map01.txt")
+        self.wall_list = map_obj.get_walls("maps/map01.txt")
         self.fire_load_list = []
         self.mouse = tools.Mouse()
-
-
-    def wall_init(self):
-        wall_img = pygame.image.load("images/wall.png")
-        wall = wall_obj.Wall(wall_img, (54, 14), (250, 250), direction=90)
-        wall2 = wall_obj.Wall(wall_img, (54, 14), (303, 250), direction=90)
-        wall3 = wall_obj.Wall(wall_img, (54, 14), (400, 250), direction=0)
-        self.wall_list += [wall, wall2, wall3]
 
     def process_events(self):
         events = pygame.event.get()
