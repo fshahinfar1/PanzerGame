@@ -4,7 +4,7 @@
 # last update : 6/10/95
 from __future__ import division
 import pygame
-from math import atan, degrees
+from math import sin, cos, atan, degrees, radians
 import exceptions
 
 
@@ -228,3 +228,11 @@ def is_between_two_point(pos, p1, p2):
     height = max_y - min_y
     rect = [min_x, min_y, width, height]
     return is_in_rectangle(pos, rect)
+
+
+def rotate_point(point, degree):
+    theta = radians(degree)
+    new_x = cos(theta) * point[0] - sin(theta) * point[1]
+    new_y = sin(theta) * point[0] + cos(theta) * point[1]
+    return new_x, new_y
+

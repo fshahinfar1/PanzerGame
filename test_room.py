@@ -24,7 +24,8 @@ class TestRoom(room_obj.Room):
         wall_img = pygame.image.load("images/wall.png")
         wall = wall_obj.Wall(wall_img, (54, 14), (250, 250), direction=90)
         wall2 = wall_obj.Wall(wall_img, (54, 14), (303, 250), direction=90)
-        self.wall_list += [wall, wall2]
+        wall3 = wall_obj.Wall(wall_img, (54, 14), (400, 250), direction=0)
+        self.wall_list += [wall, wall2, wall3]
 
     def process_events(self):
         events = pygame.event.get()
