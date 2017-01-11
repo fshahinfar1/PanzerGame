@@ -1,7 +1,7 @@
 # farbod shahinfar
 # MyPyGameTools
 # version 0.000beta
-# last update : 6/10/95
+# last update : 22/10/95
 from __future__ import division
 import pygame
 from math import sin, cos, atan, degrees, radians
@@ -236,3 +236,15 @@ def rotate_point(point, degree):
     new_y = sin(theta) * point[0] + cos(theta) * point[1]
     return new_x, new_y
 
+
+def calculate_directional_position(direction, position, speed):
+    """
+    it calculates a new position which has a distance of size speed from the position
+    in direction of this object
+    :param direction:
+    :param position:
+    :param speed:
+    :return: position_class.Position
+    """
+    theta = radians(direction)
+    return position + (speed * cos(theta), speed * sin(theta))
