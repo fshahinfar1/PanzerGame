@@ -195,7 +195,7 @@ class CollisionFixRectangle(object):
                 return True
             return False
 
-    # todo Add move to Edge function here
+    # todo Add will_collid_at function here
     # todo this is important
 
     def move_to_edge(self, other, direction):
@@ -211,8 +211,6 @@ class CollisionFixRectangle(object):
 # Functions
 def get_object_may_collide(obj, range_radius, *args):
     result = []
-    log = open('log.txt', 'a')
-    log.write(str(args)+'\n')
     if isinstance(obj, (CollisionCircle, CollisionFixRectangle)):
         for item in collidable_objects.items():
             if isinstance(item[0], CollisionFixRectangle):

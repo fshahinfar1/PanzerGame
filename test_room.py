@@ -68,23 +68,9 @@ class TestRoom(room_obj.Room):
         # mouse
         if self.mouse.is_btn_pressed(1):
             pass
-        # collision logic
-        if self.panzer.collision_obj.is_colliding_with(self.wall_list[0].collision_obj):
-            self.panzer.set_speed(0)
-            self.panzer.set_acceleration(0)
-            self.panzer.set_position(self.panzer.collision_obj.move_to_edge(self.wall_list[0].collision_obj, self.panzer.direction))
-            print(self.wall_list[0].pos)
-            print(self.panzer.position)
-            print('Collision ***')
         # object loop
         self.panzer.loop()
         [load.loop() for load in self.fire_load_list]
-        # for load in self.fire_load_list:
-        #     temp = load.loop()
-        #     if temp:
-        #         load.destroy()
-        #         self.fire_load_list.remove(load)
-
         collision_tools.update_collidable_objects_list_position()
 
     def draw_frame(self):
