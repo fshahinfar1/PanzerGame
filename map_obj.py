@@ -44,7 +44,6 @@ def get_walls(file_add):
             wall_size = brace_data(data_string, 2)
             new_wall = wall_obj.Wall(wall_image, wall_size, wall_pos, wall_dir)
             walls_list.append(new_wall)
-    print walls_list
     return walls_list
 
 
@@ -58,7 +57,7 @@ def remove_title(string, title):
     return string[len(title)+2:]
 
 
-def find_comma(string, index):
+def find_semi_colon(string, index):
     count = -1
     last_comma = 1
     for i in range(len(string)):
@@ -72,7 +71,7 @@ def find_comma(string, index):
 
 
 def brace_data(string, index):
-    comma_pos = find_comma(string, index)
+    comma_pos = find_semi_colon(string, index)
     print(comma_pos)
     data = string[comma_pos[0]:comma_pos[1]].strip()
     print(data)

@@ -29,12 +29,12 @@ class Wall(object):
     def draw(self, screen):
         #left_corner = tuple(self.pos - position_class.Position(self.size)/2)
         screen.blit(self.image, tuple(self.pos))
-        rect = \
-            [self.collision_obj.position[0], self.collision_obj.position[1], self.collision_obj.width, \
-             self.collision_obj.height]
-        pygame.draw.rect(screen, (255, 0, 0), rect)
-        pygame.draw.circle(screen, (0, 255, 0), self.collision_obj.position, 2)
-        pygame.draw.circle(screen, (0, 255, 255), self.collision_obj.position + (int(self.collision_obj.width), 0), 2)
+        # rect = \
+        #     [self.collision_obj.position[0], self.collision_obj.position[1], self.collision_obj.width, \
+        #      self.collision_obj.height]
+        # pygame.draw.rect(screen, (255, 0, 0), rect)
+        # pygame.draw.circle(screen, (0, 255, 0), self.collision_obj.position, 2)
+        # pygame.draw.circle(screen, (0, 255, 255), self.collision_obj.position + (int(self.collision_obj.width), 0), 2)
 
 
 
