@@ -248,3 +248,12 @@ def calculate_directional_position(direction, position, speed):
     """
     theta = radians(direction)
     return position + (speed * cos(theta), speed * sin(theta))
+
+
+def reflection_angle(collision_angle):
+    """
+
+    :param collision_angle: angle between colliding obj and collided object
+    :return: angle which reflecting obj should have now
+    """
+    return 360 - collision_angle
