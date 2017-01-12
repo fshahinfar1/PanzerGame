@@ -292,10 +292,14 @@ def calculate_directional_position(direction, position, speed):
     return position + (speed * cos(theta), speed * sin(theta))
 
 
-def reflection_angle(collision_angle):
-    """
+def in_360_degree(degree):
+    if degree > 360:
+        return degree % 360
+    if degree < 0:
+        return 360 - (degree % 360)
+    return degree
 
-    :param collision_angle: angle between colliding obj and collided object
-    :return: angle which reflecting obj should have now
-    """
-    return 360 - collision_angle
+
+def reflect(degree, surface_degree):
+    ref_degree = 2 * surface_degree - degree + 360
+    return ref_degree
