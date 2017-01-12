@@ -123,9 +123,8 @@ class Panzer(object):
         left_top_corner[0] = self.position[0] - self.image.get_size()[0]/2
         left_top_corner[1] = self.position[1] - self.image.get_size()[1]/2
         # pygame.draw.circle(screen, (0, 0, 0), self.collision_obj.position.int_cordinates(), self.collision_obj.radius, 0)
+        # pygame.draw.circle(screen, (0, 255, 0), self.collision_obj.position.int_cordinates(), 2, 0)
         screen.blit(self.image, left_top_corner)
-
-        #pygame.draw.circle(screen, (0, 255, 0), self.collision_obj.position, 2, 0)
 
     def key_right(self):
         self.set_direction(1, True)

@@ -12,7 +12,6 @@ room = test_room.TestRoom(clock)
 states = room.is_end()
 
 
-
 def main(game, game_state):
     """
      Here is Main Main loop of the game and it's the most simplest

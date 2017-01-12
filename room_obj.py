@@ -10,8 +10,7 @@ class Room:
         self.Name = name  # Room name
         self.flag_end = False  # represents if room is end
         self.flag_GameOver = False  # Game End (all done quit)
-        self.screen_size = size
-        self.width, self.height = size
+        self.screen_size = self.width, self.height = size
         self.screen = pygame.display.set_mode(self.screen_size)
         pygame.display.set_caption(caption)
         self.clock = clock
