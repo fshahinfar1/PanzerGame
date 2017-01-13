@@ -163,6 +163,15 @@ class CollisionFixRectangle(object):
 
         return map_dict[c]
 
+    def get_colliding_surface_angle(self, other):
+        if not isinstance(other, (CollisionCircle, CollisionFixRectangle)):
+            raise
+        other_x, other_y = other.get_position()
+        if other_x < self.position[0] or other_x > self.position[0] + self.width:
+            return 90
+        else:
+            return 0
+
     def get_width(self):
         return self.width
 

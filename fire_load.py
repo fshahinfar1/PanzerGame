@@ -6,7 +6,7 @@ import position_class
 import collision_tools
 import wall_obj
 from math import radians, sin, cos
-from my_pygame_tools import in_360_degree
+from my_pygame_tools import in_360_degree, reflect
 
 
 class BouncyFireLoad(object):
@@ -51,11 +51,7 @@ class BouncyFireLoad(object):
                 # fixme find a better way to calculate reflaction from surface with angle = theta
                 self.direction = in_360_degree(self.direction)
                 self.position = self.collision_obj.move_to_edge(collide_object, self.direction)
-                # todo x = 2theta - fi + 360
-                self.direction = 360 - self.direction  # reflect the ball from theta = 0 surface
-                if self.collision_obj.will_collide_with_at(collide_object, self.calculate_new_position()):
-                    # fixme it has problem her!
-                    self.direction = 180 + 360 - (360-self.direction)  # reflect the ball from theta = 90 surface
+                self.direction = reflect(self.direction, collide_object.get_colliding_surface_angle(self.collision_obj))
             else:
                 self.destroy()
                 print('destroy by {0}'.format(collide_object))
