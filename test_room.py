@@ -26,12 +26,14 @@ class TestRoom(room_obj.Room):
     def init_player(self):
         panzer_img = pygame.image.load("images/panzer.png")
         # player1
+        key_set = key_map_sets.KeySetOne()
         panzer1 = panzer_obj.Panzer((60, 60), panzer_img, (54, 54), self.clock, self)
-        player1 = player_class.Player(key_map_sets.KeySetOne.keyboard, panzer1, key_map_sets.KeySetOne.key_map)
+        player1 = player_class.Player(key_set.keyboard, panzer1, key_set.key_map)
         self.Players.append(player1)
         # player2
+        key_set = key_map_sets.JoystickSetOne(0)
         panzer2 = panzer_obj.Panzer((60, 400), panzer_img, (54, 54), self.clock, self)
-        player2 = player_class.Player(key_map_sets.KeySetTwo.keyboard, panzer2, key_map_sets.KeySetTwo.key_map)
+        player2 = player_class.Player(key_set.joystick, panzer2, key_set.key_map)
         self.Players.append(player2)
 
     def process_events(self):
@@ -41,7 +43,9 @@ class TestRoom(room_obj.Room):
                 self.flag_GameOver = True
                 self.flag_end = True
             elif event.type == pygame.KEYDOWN or event.type == pygame.KEYUP:
-                [player.get_controller().get_event(event) for player in self.Players]
+                for player in self.Players:
+                    if player.controller_type() == "keyboard":
+                        player.get_controller().get_event(event)
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 self.mouse.event_btn_pressed(event)
             elif event.type == pygame.MOUSEBUTTONUP:
@@ -49,7 +53,7 @@ class TestRoom(room_obj.Room):
 
     def run_logic(self):
         for player in self.Players:
-            if isinstance(player.get_controller(), tools.KeyboardHandler):
+            if player.controller_type() == "keyboard":
                 # turn
                 if player.key_map['rotate_right'].check_hold():
                     player.get_panzer().key_right()
@@ -64,6 +68,26 @@ class TestRoom(room_obj.Room):
                     player.get_panzer().set_acceleration(0)
                 # fire
                 if player.key_map['fire'].check_hold():
+                    load = player.get_panzer().key_space()
+                    if load is not None:
+                        self.fire_load_list.append(load)
+                        load.link_holder(self.fire_load_list)
+            elif player.controller_type() == "joystick":
+                # turn
+                hat_num = player.get_controller().get_hat(0)
+                if hat_num[0] == 1:
+                    player.get_panzer().key_right()
+                elif hat_num[0] == -1:
+                    player.get_panzer().key_left()
+                # forward / backward
+                if hat_num[1] == 1 or player.get_controller().get_button(5):
+                    player.get_panzer().key_up()
+                elif hat_num[1] == -1 or player.get_controller().get_button(4):
+                    player.get_panzer().key_down()
+                else:
+                    player.get_panzer().set_acceleration(0)
+                # fire
+                if player.get_controller().get_button(2):
                     load = player.get_panzer().key_space()
                     if load is not None:
                         self.fire_load_list.append(load)
