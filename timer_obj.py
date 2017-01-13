@@ -2,7 +2,7 @@
 # timer object
 # 13/10/95
 import time
-from exceptions import ValueError
+
 
 
 class Timer(object):

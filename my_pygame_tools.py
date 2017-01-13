@@ -5,7 +5,7 @@
 from __future__ import division
 import pygame
 from math import sin, cos, atan, degrees, radians
-import exceptions
+
 
 
 class Colors:
@@ -229,7 +229,7 @@ def sgn(value):
             return int(value/absolute(value))
     else:
         print("Unsupported Type for function sgn in <my_pygame_tools.py>")
-        raise exceptions.TypeError
+        raise
 
 
 def is_in_rectangle(pos,rect):
