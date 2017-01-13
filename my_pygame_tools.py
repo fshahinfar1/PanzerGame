@@ -303,3 +303,8 @@ def in_360_degree(degree):
 def reflect(degree, surface_degree):
     ref_degree = 2 * surface_degree - degree + 360
     return ref_degree
+
+
+def draw_polyline(screen, color, list_point, width=1):
+    for i in range(len(list_point)-1):
+        pygame.draw.line(screen, color, list_point[i], list_point[i+1], width)

@@ -164,7 +164,7 @@ class CollisionFixRectangle(object):
         return map_dict[c]
 
     def get_colliding_surface_angle(self, other):
-        if not isinstance(other, (CollisionCircle, CollisionFixRectangle)):
+        if not isinstance(other, (CollisionCircle, CollisionFixRectangle, CollisionPoint)):
             raise
         other_x, other_y = other.get_position()
         if other_x < self.position[0] or other_x > self.position[0] + self.width:
@@ -185,7 +185,7 @@ class CollisionFixRectangle(object):
         return [self.position[0], self.position[1], self.width, self.height]
 
     def is_colliding_with(self, other):
-        if isinstance(other, CollisionFixRectangle):
+        if isinstance(other, (CollisionFixRectangle, CollisionPoint)):
             if (self.position[0] < other.position[0] + other.width) and\
                     (self.position[0] + self.width > other.position[0]) and\
                     (self.position[1] < other.position[1] + other.height) and\
@@ -222,6 +222,91 @@ class CollisionFixRectangle(object):
         return self.position
 
 
+class CollisionPoint(object):
+    def __init__(self, pos, link_object=None, solid=False):
+        self.position = position_class.Position(pos)
+        self.width = 1
+        self.height = 1
+        self.parent = link_object
+        self.solid = solid
+        # add object to collidabel objects dictionary
+        collidable_objects[self] = self.position
+
+    def destroy(self):
+        del collidable_objects[self]
+
+    def __str__(self):
+        return "CollisionPoint at {0}".format(self.position)
+
+    def is_solid(self):
+        return self.solid
+
+    def set_solid(self):
+        self.solid = True
+
+    def get_parent(self):
+        return self.parent
+
+    def set_parent(self, obj):
+        self.parent = obj
+
+    def get_position(self):
+        return self.position
+
+    def set_position(self, pos):
+        self.position = position_class.Position(pos)
+
+    def is_colliding_with(self, other):
+        if isinstance(other, (CollisionFixRectangle, CollisionPoint)):
+            if (self.position[0] < other.position[0] + other.width) and\
+                    (self.position[0] + self.width > other.position[0]) and\
+                    (self.position[1] < other.position[1] + other.height) and\
+                    (self.position[1] + self.height > other.position[1]):
+                return True
+            return False
+        if isinstance(other, CollisionCircle):
+            dx = self.position[0] - other.position[0]
+            dy = self.position[1] - other.position[1]
+            if dx < 0:
+                dx += self.width
+                if dx > 0:
+                    dx = 0
+            if dy < 0:
+                dy += self.height
+                if dy > 0:
+                    dy = 0
+            dx = abs(dx)
+            dy = abs(dy)
+            if dx**2 + dy**2 < other.radius**2:
+                return True
+            return False
+
+    def will_collide_with_at(self, other, pos):
+        if isinstance(other, (CollisionFixRectangle, CollisionPoint)):
+            if (pos[0] < other.position[0] + other.width) and \
+                    (pos[0] + self.width > other.position[0]) and \
+                    (pos[1] < other.position[1] + other.height) and \
+                    (pos[1] + self.height > other.position[1]):
+                return True
+            return False
+        if isinstance(other, CollisionCircle):
+            dx = pos[0] - other.position[0]
+            dy = pos[1] - other.position[1]
+            if dx < 0:
+                dx += self.width
+                if dx > 0:
+                    dx = 0
+            if dy < 0:
+                dy += self.height
+                if dy > 0:
+                    dy = 0
+            dx = abs(dx)
+            dy = abs(dy)
+            if dx ** 2 + dy ** 2 < other.radius ** 2:
+                return True
+            return False
+
+
 # Functions
 def is_colliding(obj, pos, *args):
     """
@@ -233,7 +318,7 @@ def is_colliding(obj, pos, *args):
     :param args:
     :return: collide_object
     """
-    if not isinstance(obj, (CollisionCircle, CollisionFixRectangle)):
+    if not isinstance(obj, (CollisionCircle, CollisionFixRectangle, CollisionPoint)):
         print('Type error in function get_object_may_collide in Collision_tools')
         raise
     for item in collidable_objects.items():

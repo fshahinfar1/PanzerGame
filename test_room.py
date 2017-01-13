@@ -9,6 +9,7 @@ import player_class
 import collision_tools
 import map_obj
 import key_map_sets
+import fire_load
 import my_pygame_tools as tools
 cp = tools.Colors()
 
@@ -30,11 +31,12 @@ class TestRoom(room_obj.Room):
         panzer1 = panzer_obj.Panzer((60, 60), panzer_img, (54, 54), self.clock, self)
         player1 = player_class.Player(key_set.keyboard, panzer1, key_set.key_map)
         self.Players.append(player1)
-        # player2
-        key_set = key_map_sets.JoystickSetOne(0)
-        panzer2 = panzer_obj.Panzer((60, 400), panzer_img, (54, 54), self.clock, self)
-        player2 = player_class.Player(key_set.joystick, panzer2, key_set.key_map)
-        self.Players.append(player2)
+        # # player2
+        # key_set = key_map_sets.JoystickSetOne(0)
+        # panzer2 = panzer_obj.Panzer((60, 400), panzer_img, (54, 54), self.clock, self)
+        # # fixme key_set.key_map is not usable here
+        # player2 = player_class.Player(key_set.joystick, panzer2, key_set.key_map)
+        # self.Players.append(player2)
 
     def process_events(self):
         events = pygame.event.get()
@@ -92,26 +94,6 @@ class TestRoom(room_obj.Room):
                     if load is not None:
                         self.fire_load_list.append(load)
                         load.link_holder(self.fire_load_list)
-        # player2
-        # turn
-        # hat_num = self.Players[1].get_controller().get_hat(0)
-        # if hat_num[0] == 1:
-        #     self.Players[1].get_panzer().key_right()
-        # elif hat_num[0] == -1:
-        #     self.Players[1].get_panzer().key_left()
-        # # forward / backward
-        # if hat_num[1] == 1 or self.Players[1].get_controller().get_button(5):
-        #     self.Players[1].get_panzer().key_up()
-        # elif hat_num[1] == -1 or self.Players[1].get_controller().get_button(4):
-        #     self.Players[1].get_panzer().key_down()
-        # else:
-        #     self.Players[1].get_panzer().set_acceleration(0)
-        # # fire
-        # if self.Players[1].get_controller().get_button(2):
-        #     load = self.Players[1].get_panzer().key_space()
-        #     if load is not None:
-        #         self.fire_load_list.append(load)
-        #         load.link_holder(self.fire_load_list)
         # mouse
         if self.mouse.is_btn_pressed(1):
             print('left_btn_pressed')
@@ -125,7 +107,7 @@ class TestRoom(room_obj.Room):
 
     def draw_frame(self):
         self.screen.fill(cp.WHITE)  # clear display
-        [player.get_panzer().draw(self.screen) for player in self.Players]
         [wall.draw(self.screen) for wall in self.wall_list]
+        [player.get_panzer().draw(self.screen) for player in self.Players]
         [load.draw(self.screen) for load in self.fire_load_list]
         pygame.display.flip()  # update display
