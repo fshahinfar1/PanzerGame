@@ -1,12 +1,10 @@
-# farbod shahinfar
-# 7/10/95
+# Farbod Shahinfar
+# 25/10/95
 # Test Room
 import pygame
 import room_obj
 import panzer_obj
-import wall_obj
 import player_class
-import collision_tools
 import map_obj
 import key_map_sets
 import fire_load
@@ -21,7 +19,7 @@ class TestRoom(room_obj.Room):
         self.Players = []
         self.init_player()
         self.wall_list = map_obj.get_walls("maps/map01.txt")
-        self.fire_load_list = []
+        # self.fire_load_list = []
         self.mouse = tools.Mouse()
 
     def init_player(self):
@@ -70,10 +68,8 @@ class TestRoom(room_obj.Room):
                     player.get_panzer().set_acceleration(0)
                 # fire
                 if player.key_map['fire'].check_hold():
-                    load = player.get_panzer().key_space()
-                    if load is not None:
-                        self.fire_load_list.append(load)
-                        load.link_holder(self.fire_load_list)
+                    player.get_panzer().key_space()
+
             elif player.controller_type() == "joystick":
                 # turn
                 hat_num = player.get_controller().get_hat(0)
@@ -90,10 +86,8 @@ class TestRoom(room_obj.Room):
                     player.get_panzer().set_acceleration(0)
                 # fire
                 if player.get_controller().get_button(2):
-                    load = player.get_panzer().key_space()
-                    if load is not None:
-                        self.fire_load_list.append(load)
-                        load.link_holder(self.fire_load_list)
+                    player.get_panzer().key_space()
+
         # mouse
         if self.mouse.is_btn_pressed(1):
             print('left_btn_pressed')
@@ -102,12 +96,12 @@ class TestRoom(room_obj.Room):
 
         # object loop
         [player.get_panzer().loop() for player in self.Players]
-        [load.loop() for load in self.fire_load_list]
-        collision_tools.update_collidable_objects_list_position()
+        [load.loop() for load in fire_load.FireLoadObjectsList]
+        # collision_tools.update_collidable_objects_list_position()
 
     def draw_frame(self):
         self.screen.fill(cp.WHITE)  # clear display
-        [wall.draw(self.screen) for wall in self.wall_list]
-        [player.get_panzer().draw(self.screen) for player in self.Players]
-        [load.draw(self.screen) for load in self.fire_load_list]
-        pygame.display.flip()  # update display
+        [wall.draw(self.screen) for wall in self.wall_list]  # draw walls
+        [player.get_panzer().draw(self.screen) for player in self.Players]  # draw tanks
+        [load.draw(self.screen) for load in fire_load.FireLoadObjectsList]  # draw bullets
+        pygame.display.update()  # update display

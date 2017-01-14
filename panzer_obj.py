@@ -1,5 +1,5 @@
 # Farbod Shahinfar
-# 8/10/95
+# 25/10/95
 # panzer game
 # panzer object
 from __future__ import division
@@ -28,12 +28,11 @@ class Panzer(object):
         self.collision_obj = collision_tools.CollisionCircle(self.position, 27, self, solid=True)
         # fire
         self.flag_ready_fire = True
-        self.timer = timer_obj.Timer(1)
+        self.timer = timer_obj.Timer(1)  # reload timer
         self.room = room
-        self.bullets_list = []
+        self.bullet_type = fire_load.BouncyFireLoad
         # laser
         self.laser = fire_load.Laser(self.calculate_directional_position(self.position, 28 + abs(self.speed)), self.direction)
-
 
     def get_position(self):
         return self.position
@@ -63,9 +62,6 @@ class Panzer(object):
             t = self.direction//360
             self.direction -= (t * 360)
         self.image = pygame.transform.rotozoom(self.image, -self.direction, 1)
-        self.laser.set_position(self.calculate_directional_position(self.position, 28 + abs(self.speed)), update=False)  ###
-        self.laser.set_direction(self.direction, update=False) ###
-        self.laser.update()
 
     def set_speed(self, value, rel=False):
         if rel:
@@ -117,26 +113,15 @@ class Panzer(object):
                 return  # Done updating position
         self.position = new_pos
         self.collision_obj.set_position(self.position)
-        self.laser.set_position(self.calculate_directional_position(self.position, 28 + abs(self.speed)), update=False) ###
-        self.laser.set_direction(self.direction, update=False) ###
-        self.laser.update()
 
     def fire(self, bullet_type):
-        bullet = None
         if bullet_type == fire_load.BouncyFireLoad:
-            bullet = \
-                bullet_type(self.calculate_directional_position(self.position, 28+abs(self.speed)), self.direction,\
-                            speed=10, room=self.room)
+            bullet_type(self.calculate_directional_position(self.position, 28+abs(self.speed)), self.direction,\
+                        speed=8, room=self.room)
         elif bullet_type == fire_load.Laser:
-            bullet = \
-                bullet_type(self.calculate_directional_position(self.position, 28 + abs(self.speed)), self.direction)
-        return bullet
+            bullet_type(self.calculate_directional_position(self.position, 28 + abs(self.speed)), self.direction)
 
     def draw(self, screen):
-        #
-        self.update_speed(self.acceleration)
-        self.update_position()
-        self.add_friction()
         #draw
         left_top_corner = [0, 0]
         left_top_corner[0] = self.position[0] - self.image.get_size()[0]/2
@@ -144,7 +129,6 @@ class Panzer(object):
         # pygame.draw.circle(screen, (0, 0, 0), self.collision_obj.position.int_cordinates(), self.collision_obj.radius, 0)
         # pygame.draw.circle(screen, (0, 255, 0), self.collision_obj.position.int_cordinates(), 2, 0)
         screen.blit(self.image, left_top_corner)
-        self.laser.draw(screen)
 
     def key_right(self):
         self.set_direction(1, True)
@@ -162,7 +146,7 @@ class Panzer(object):
         if self.flag_ready_fire:
             self.flag_ready_fire = False
             self.timer.set_timer()
-            return self.fire(fire_load.BouncyFireLoad)
+            self.fire(self.bullet_type)
 
     def key_l(self):
         if self.flag_ready_fire:
@@ -171,7 +155,14 @@ class Panzer(object):
             return self.fire(fire_load.Laser)
 
     def loop(self):
+        self.update_speed(self.acceleration)
+        self.update_position()
+        self.add_friction()
         if self.timer.is_time():
             self.flag_ready_fire = True
             print("ready to fire")
+        self.laser.set_position(self.calculate_directional_position(self.position, 28 + abs(self.speed)),
+                                update=False)  ###
+        self.laser.set_direction(self.direction, update=False)  ###
+        self.laser.update()
 
