@@ -69,17 +69,21 @@ class Laser(object):
     def __init__(self, pos, direction):
         self.fire_position = position_class.Position(pos)
         self.direction = direction
+        self.fire_direction = direction
         self.collision_object = collision_tools.CollisionPoint(self.fire_position, self)
         self.fire_state = 'Aim'
         self.length = 200
         self.break_points = [pos]
+        self.update()
         FireLoadObjectsList.append(self)
 
     def set_direction(self, value, rel=False, update=True):
         if rel:
             self.direction += value
+            self.fire_direction += value
         else:
             self.direction = value
+            self.fire_direction = value
         if update:
             self.update()
 
@@ -107,8 +111,13 @@ class Laser(object):
             l += d
         self.break_points.append(position_class.Position(self.collision_object.get_position()))
 
+    def fire(self, room):
+        self.fire_state = 'Fire'
+        LaserBullet(self.fire_position, self.fire_direction, room=room)
+
     def loop(self):
-        pass
+        if self.fire_state == 'Fire':
+            self.set_position(calculate_directional_position(self.fire_direction, self.fire_position, 10))
 
     def draw(self, screen):
         red = (150, 0, 0)
@@ -116,4 +125,27 @@ class Laser(object):
         pygame.draw.aalines(screen, red, False, self.break_points, 3)
         for pos in self.break_points:
             pygame.draw.circle(screen, green, pos.int_cordinates(), 2)
+
+
+class LaserBullet:
+    def __init__(self, pos, direction, speed=20, room=None):
+        self.size = (16, 8)
+        self.image_original = pygame.image.load("./images/laser_bullet.png")
+        # todo it is a good idea to create a class able to handle animation and use it instead
+        self.image = pygame.transform.scale(self.image_original, self.size)
+        self.position = position_class.Position(pos)  # current position of obj
+        self.speed = speed  # moving speed
+        self.direction = direction  # movement direction
+        self.collision_obj = collision_tools.CollisionPoint(self.position, self)
+        # todo Do I really need to give the room to object ??
+        self.room = room  # room which this object is in
+        self.timer = timer_obj.Timer(5)  # 5 sec to self destruction
+        self.timer.set_timer()  # start of timer is creation time
+        FireLoadObjectsList.append(self)  # add self to object list
+
+    def destroy(self):
+        self.collision_obj.destroy()
+        FireLoadObjectsList.remove(self)
+        del self  # does it do anything or not??
+
 

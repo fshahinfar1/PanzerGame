@@ -8,6 +8,7 @@ import position_class
 import collision_tools
 import timer_obj
 import fire_load
+import collectable_object
 from math import sin, cos, radians
 from my_pygame_tools import sgn, KeyboardHandler
 
@@ -32,7 +33,7 @@ class Panzer(object):
         self.room = room
         self.bullet_type = fire_load.BouncyFireLoad
         # laser
-        self.laser = fire_load.Laser(self.calculate_directional_position(self.position, 28 + abs(self.speed)), self.direction)
+        # self.laser = fire_load.Laser(self.calculate_directional_position(self.position, 28 + abs(self.speed)), self.direction)
 
     def get_position(self):
         return self.position
@@ -48,6 +49,9 @@ class Panzer(object):
 
     def get_speed(self):
         return self.speed
+
+    def set_bullet_type(self, value):
+        self.bullet_type = value
 
     def set_acceleration(self, value):
         self.acceleration = value
@@ -111,6 +115,8 @@ class Panzer(object):
                 self.set_acceleration(0)
                 self.set_speed(0)
                 return  # Done updating position
+            elif isinstance(collide_object.get_parent(), collectable_object.CollectableObject):
+                collide_object.get_parent().collided_with(self)
         self.position = new_pos
         self.collision_obj.set_position(self.position)
 
@@ -119,7 +125,8 @@ class Panzer(object):
             bullet_type(self.calculate_directional_position(self.position, 28+abs(self.speed)), self.direction,\
                         speed=8, room=self.room)
         elif bullet_type == fire_load.Laser:
-            bullet_type(self.calculate_directional_position(self.position, 28 + abs(self.speed)), self.direction)
+            self.laser.fire(self.room)
+            self.bullet_type = fire_load.BouncyFireLoad
 
     def draw(self, screen):
         #draw
@@ -161,8 +168,10 @@ class Panzer(object):
         if self.timer.is_time():
             self.flag_ready_fire = True
             print("ready to fire")
-        self.laser.set_position(self.calculate_directional_position(self.position, 28 + abs(self.speed)),
-                                update=False)  ###
-        self.laser.set_direction(self.direction, update=False)  ###
-        self.laser.update()
+        if self.bullet_type is fire_load.Laser:
+            if self.laser.fire_state == 'Aim':
+                self.laser.set_position(self.calculate_directional_position(self.position, 28 + abs(self.speed)),
+                                        update=False)  ###
+                self.laser.set_direction(self.direction, update=False)  ###
+                self.laser.update()
 
