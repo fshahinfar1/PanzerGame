@@ -1,7 +1,6 @@
 # Farbod Shahinfar
 # 7/10/95
 # position class
-import multimethod
 
 
 class Position(object):
@@ -25,7 +24,7 @@ class Position(object):
             return Position((new_x, new_y))
         else:
             print("Type Error")
-            raise
+            raise TypeError
 
     def __sub__(self, other):
         if isinstance(other, (Position, tuple, list)):
@@ -34,7 +33,7 @@ class Position(object):
             return Position((new_x, new_y))
         else:
             print("Type Error")
-            raise
+            raise TypeError
 
     def __mul__(self, other):
         if isinstance(other, (Position, tuple, list,)):
@@ -47,16 +46,16 @@ class Position(object):
             return Position((new_x, new_y))
         else:
             print("Type Error")
-            raise
+            raise TypeError
 
-    def __div__(self, other):
+    def __truediv__(self, other):
         if isinstance(other, (int, float)):
             new_x = self.x / other
             new_y = self.y / other
             return Position((new_x, new_y))
         else:
             print("Type Error")
-            raise
+            raise TypeError
 
     def __getitem__(self, index):
         if index == 0:
@@ -65,7 +64,7 @@ class Position(object):
             return self.y
         else:
             print("Index out of range")
-            raise
+            raise TypeError
 
     def __setitem__(self, index, value):
         if index == 0:
@@ -74,7 +73,7 @@ class Position(object):
             self.y = value
         else:
             print("Index out of range")
-            raise
+            raise TypeError
 
     def __iter__(self):
         for i in range(2):
