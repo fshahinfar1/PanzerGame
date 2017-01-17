@@ -7,7 +7,7 @@ import collision_tools
 import wall_obj
 import timer_obj
 from math import degrees,radians, sin, cos, atan2
-from my_pygame_tools import reflect, calculate_directional_position, distance
+from my_pygame_tools import reflect, calculate_directional_position, distance, draw_polyline
 from random import randrange
 FireLoadObjectsList = []
 
@@ -121,8 +121,8 @@ class TirKoloft(BulletBase):
         BulletBase.destroy(self)
 
 
-class Laser(object):
-    def __init__(self, pos, direction):
+class LaserGun(object):
+    def __init__(self, pos, direction, panzer):
         self.fire_position = position_class.Position(pos)
         self.direction = direction
         self.fire_direction = direction
@@ -131,7 +131,13 @@ class Laser(object):
         self.length = 200
         self.break_points = [pos]
         self.update()
+        self.panzer = panzer
         FireLoadObjectsList.append(self)
+
+    def destroy(self):
+        self.collision_object.destroy()
+        FireLoadObjectsList.remove(self)
+        del self  # does it do anything or not??
 
     def set_direction(self, value, rel=False, update=True):
         if rel:
@@ -172,7 +178,10 @@ class Laser(object):
         LaserBullet(self.fire_position, self.fire_direction, room=room)
 
     def loop(self):
-        pass
+        self.set_position(self.panzer.calculate_directional_position(self.panzer.position, 28 + abs(self.panzer.speed)),
+                          update=False)
+        self.set_direction(self.panzer.direction, update=False)
+        self.update()
 
     def draw(self, screen):
         red = (150, 0, 0)
@@ -183,11 +192,11 @@ class Laser(object):
 
 
 class LaserBullet(BulletBase):
-    def __init__(self, pos, direction, speed=3, room=None):
+    def __init__(self, pos, direction, speed=20, room=None):
         size = (2, 2)
         image = pygame.image.load("./images/laser_bullet.png")
         collision_obj = collision_tools.CollisionPoint(pos, self)
-        BulletBase.__init__(self, pos, direction, speed, image, size, collision_obj, 500, room)
+        BulletBase.__init__(self, pos, direction, speed, image, size, collision_obj, 3, room)
         self.collision_points = [pos]
         self.length = 100
 
@@ -239,6 +248,7 @@ class LaserBullet(BulletBase):
         self.update_collision_points()
         screen.blit(self.image, self.get_left_corner())
         pygame.draw.aalines(screen, blue, False, self.collision_points + [self.position])
+        # draw_polyline(screen, blue, self.collision_points + [self.position], 3)
 
 
 class WiredLaserBullet(BulletBase):

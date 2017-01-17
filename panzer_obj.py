@@ -2,7 +2,6 @@
 # 25/10/95
 # panzer game
 # panzer object
-from __future__ import division
 import pygame
 import position_class
 import collision_tools
@@ -26,14 +25,13 @@ class Panzer(object):
         self.size = size
         self.clock = clock
         # collision
-        self.collision_obj = collision_tools.CollisionCircle(self.position, 27, self, solid=True)
+        self.collision_obj = collision_tools.CollisionCircle(self.position, 16, self, solid=True)
         # fire
         self.flag_ready_fire = True
         self.timer = timer_obj.Timer(1)  # reload timer
         self.room = room
         self.bullet_type = fire_load.BouncyFireLoad
-        # laser
-        # self.laser = fire_load.Laser(self.calculate_directional_position(self.position, 28 + abs(self.speed)), self.direction)
+        self.Gun = None
 
     def get_position(self):
         return self.position
@@ -124,24 +122,25 @@ class Panzer(object):
         if bullet_type in (fire_load.BouncyFireLoad, fire_load.TirKoloft):
             bullet_type(self.calculate_directional_position(self.position, 20+28+abs(self.speed)), self.direction,\
                         room=self.room)
-        elif bullet_type == fire_load.Laser:
-            self.laser.fire(self.room)
-            self.bullet_type = fire_load.BouncyFireLoad
+        elif bullet_type == fire_load.LaserBullet:
+            self.Gun.fire(self.room)
+            self.Gun.destroy()
+        self.bullet_type = fire_load.BouncyFireLoad
 
     def draw(self, screen):
         #draw
         left_top_corner = [0, 0]
         left_top_corner[0] = self.position[0] - self.image.get_size()[0]/2
         left_top_corner[1] = self.position[1] - self.image.get_size()[1]/2
+        screen.blit(self.image, left_top_corner)
         # pygame.draw.circle(screen, (0, 0, 0), self.collision_obj.position.int_cordinates(), self.collision_obj.radius, 0)
         # pygame.draw.circle(screen, (0, 255, 0), self.collision_obj.position.int_cordinates(), 2, 0)
-        screen.blit(self.image, left_top_corner)
 
     def key_right(self):
-        self.set_direction(1, True)
+        self.set_direction(2, True)
 
     def key_left(self):
-        self.set_direction(-1, True)
+        self.set_direction(-2, True)
 
     def key_up(self):
         self.acceleration = 4
@@ -168,10 +167,3 @@ class Panzer(object):
         if self.timer.is_time():
             self.flag_ready_fire = True
             print("ready to fire")
-        if self.bullet_type is fire_load.Laser:
-            if self.laser.fire_state == 'Aim':
-                self.laser.set_position(self.calculate_directional_position(self.position, 28 + abs(self.speed)),
-                                        update=False)  ###
-                self.laser.set_direction(self.direction, update=False)  ###
-                self.laser.update()
-
