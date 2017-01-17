@@ -11,21 +11,25 @@ from my_pygame_tools import reflect, calculate_directional_position
 FireLoadObjectsList = []
 
 
-class BouncyFireLoad(object):
-    def __init__(self, pos, direction, speed=2, room=None):
-        self.size = (10, 10)
-        self.image_original = pygame.image.load("./images/bouncy_fire_load.png")
+class BulletBase(object):
+    def __init__(self, pos, direction=0, speed=0, image=None, size=None, collision_object=None, t=5, room=None):
+        self.size = size
+        self.image_original = image
         # todo it is a good idea to create a class able to handle animation and use it instead
         self.image = pygame.transform.scale(self.image_original, self.size)
+        self.image = pygame.transform.rotozoom(self.image, direction, 1)
         self.position = position_class.Position(pos)  # current position of obj
-        self.speed = speed  # moving speed
-        self.direction = direction  # movement direction
-        self.collision_obj = collision_tools.CollisionCircle(self.position, 8, self)
+        self.speed = speed
+        self.direction = direction
+        self.collision_obj = collision_object
         # todo Do I really need to give the room to object ??
         self.room = room  # room which this object is in
-        self.timer = timer_obj.Timer(5)  # 5 sec to self destruction
+        self.timer = timer_obj.Timer(t)  # t sec to self destruction
         self.timer.set_timer()  # start of timer is creation time
         FireLoadObjectsList.append(self)  # add self to object list
+
+    def __str__(self):
+        return "Bullet"
 
     def destroy(self):
         self.collision_obj.destroy()
@@ -40,8 +44,9 @@ class BouncyFireLoad(object):
     def update_position(self):
         self.position = self.calculate_new_position()
         self.collision_obj.set_position(self.position)
-        if self.room.is_out_of_room(self.position):
-            self.destroy()
+        if self.room is not None:
+            if self.room.is_out_of_room(self.position):
+                self.destroy()
 
     def loop(self):
         if self.timer.is_time():
@@ -54,15 +59,23 @@ class BouncyFireLoad(object):
             if isinstance(collide_object.get_parent(), wall_obj.Wall):
                 self.position = self.collision_obj.move_to_edge(collide_object, self.direction)
                 self.direction = reflect(self.direction, collide_object.get_colliding_surface_angle(self.collision_obj))
-            else:
+            elif collide_object.is_solid():
                 self.destroy()
-                print('destroy by {0}'.format(collide_object))
-                return True  # True means it is time to say goodbye
-        return False
+                print('{0} destroy by {1}'.format(self, collide_object))
+
+    def get_left_corner(self):
+        return self.position - position_class.Position(self.size)/2
 
     def draw(self, screen):
-        left_corner = self.position - (8, 8)
-        screen.blit(self.image, left_corner)
+        screen.blit(self.image, self.get_left_corner())
+
+
+class BouncyFireLoad(BulletBase):
+    def __init__(self, pos, direction, speed=2, room=None):
+        img = pygame.image.load("./images/bouncy_fire_load.png")
+        size = (10, 10)
+        collision_obj = collision_tools.CollisionCircle(pos, 8, self)
+        BulletBase.__init__(self, pos, direction, speed, img, size, collision_obj, 5, room)
 
 
 class Laser(object):
