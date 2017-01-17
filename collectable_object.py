@@ -46,6 +46,17 @@ class CollectableObject(object):
         screen.blit(self.image, self.get_left_corner())
 
 
+class TirKoloftObject(CollectableObject):
+    def __init__(self, pos):
+        img = pygame.image.load("images/laser.png")
+        img = pygame.transform.scale(img, (16, 16))
+        CollectableObject.__init__(self, img, pos)
+
+    def collided_with(self, other):
+        other.set_bullet_type(fire_load.TirKoloft)
+        self.destroy()
+
+
 class LaserObject(CollectableObject):
 
     def __init__(self, pos):

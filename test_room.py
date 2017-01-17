@@ -8,6 +8,7 @@ import player_class
 import map_obj
 import key_map_sets
 import fire_load
+import collectable_object
 import my_pygame_tools as tools
 cp = tools.Colors()
 
@@ -18,8 +19,11 @@ class TestRoom(room_obj.Room):
         # init_player
         self.Players = []
         self.init_player()
+        # walls
         self.wall_list = map_obj.get_walls("maps/map01.txt")
-        # self.fire_load_list = []
+        # collectable objects
+        collectable_object.LaserObject((250, 60))
+        collectable_object.TirKoloftObject((60, 250))
         self.mouse = tools.Mouse()
 
     def init_player(self):
@@ -97,11 +101,11 @@ class TestRoom(room_obj.Room):
         # object loop
         [player.get_panzer().loop() for player in self.Players]
         [load.loop() for load in fire_load.FireLoadObjectsList]
-        # collision_tools.update_collidable_objects_list_position()
 
     def draw_frame(self):
         self.screen.fill(cp.WHITE)  # clear display
         [wall.draw(self.screen) for wall in self.wall_list]  # draw walls
+        [obj.draw(self.screen) for obj in collectable_object.object_list]  # draw collectable objects
         [player.get_panzer().draw(self.screen) for player in self.Players]  # draw tanks
         [load.draw(self.screen) for load in fire_load.FireLoadObjectsList]  # draw bullets
         pygame.display.update()  # update display

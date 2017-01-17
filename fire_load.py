@@ -8,6 +8,7 @@ import wall_obj
 import timer_obj
 from math import radians, sin, cos
 from my_pygame_tools import reflect, calculate_directional_position
+from random import randrange
 FireLoadObjectsList = []
 
 
@@ -71,11 +72,45 @@ class BulletBase(object):
 
 
 class BouncyFireLoad(BulletBase):
-    def __init__(self, pos, direction, speed=2, room=None):
+    def __init__(self, pos, direction, speed=8, room=None):
         img = pygame.image.load("./images/bouncy_fire_load.png")
         size = (10, 10)
+        collision_obj = collision_tools.CollisionCircle(pos, 5, self)
+        BulletBase.__init__(self, pos, direction, speed, img, size, collision_obj, 5, room)
+
+
+class TarKesh(BulletBase):
+    def __init__(self, pos, direction, speed=6, room=None):
+        img = pygame.image.load("./images/TarKesh.png")
+        size = (8, 8)
+        collision_obj = collision_tools.CollisionCircle(pos, 4, self)
+        BulletBase.__init__(self, pos, direction, speed, img, size, collision_obj, 2, room)
+
+    def loop(self):
+        if self.timer.is_time():
+            self.destroy()
+            return
+        # all collision logic of the bullet is here
+        self.update_position()
+        collide_object = collision_tools.is_colliding(self.collision_obj, self.position, self.collision_obj)
+        if collide_object is not None:
+            if collide_object.is_solid():
+                self.destroy()
+                print('{0} destroy by {1}'.format(self, collide_object))
+
+
+class TirKoloft(BulletBase):
+    def __init__(self, pos, direction, speed=5, room=None):
+        img = pygame.image.load("./images/bouncy_fire_load.png")
+        size = (16, 16)
         collision_obj = collision_tools.CollisionCircle(pos, 8, self)
         BulletBase.__init__(self, pos, direction, speed, img, size, collision_obj, 5, room)
+
+    def destroy(self):
+        for i in range(20):
+            direction = randrange(0, 361)
+            TarKesh(self.position, direction, room=self.room)
+        BulletBase.destroy(self)
 
 
 class Laser(object):
