@@ -8,6 +8,7 @@ import collision_tools
 from my_pygame_tools import rotate_point
 from math import ceil
 pygame.init()
+object_list = []
 
 
 class Wall(object):
@@ -22,6 +23,10 @@ class Wall(object):
         rotate_size = ceil(abs(rotate_size[0])), ceil(abs(rotate_size[1]))
         self.collision_obj = \
             collision_tools.CollisionFixRectangle(self.pos, rotate_size[0], rotate_size[1], self, solid=True)
+        object_list.append(self)
+
+    def destroy(self):
+        object_list.remove(self)
 
     def __str__(self):
         return "wall at position {0} with size of {1}; direction = {2}".format(self.pos, self.size, self.direction)
