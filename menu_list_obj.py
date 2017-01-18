@@ -62,8 +62,8 @@ class Menu:
         if tools.is_in_rectangle(mp, self.get_rect()):
             for index in range(len(self.label_list)):
                 if self.label_list[index].is_mouse_on():
-                    return index, True
-        return -1, False
+                    return index
+        return None
 
     def draw(self, screen):
         for label in self.label_list:
