@@ -6,7 +6,7 @@ import pygame
 
 
 class Room:
-    def __init__(self, name, size=(800, 500), clock=None, caption="window"):
+    def __init__(self, name, size=(800, 500), clock=None, caption="window", next_room=None):
         self.Name = name  # Room name
         self.flag_end = False  # represents if room is end
         self.flag_GameOver = False  # Game End (all done quit)
@@ -14,6 +14,7 @@ class Room:
         self.screen = pygame.display.set_mode(self.screen_size)
         pygame.display.set_caption(caption)
         self.clock = clock
+        self.next_room = next_room
 
     def get_name(self):
         return self.Name
@@ -44,11 +45,24 @@ class Room:
         #
         # pygame.display.flip()
         pass
-    
+
     def get_next_room(self):
-        pass
+        return self.next_room
+
+    def set_next_room(self, next_room):
+        self.next_room = next_room
+
+    def goto_next_room(self):
+        self.flag_end = True
+
+    def quit_game(self):
+        self.flag_end = True
+        self.flag_GameOver = True
 
     def is_out_of_room(self, pos):
         if pos[0] > self.width or pos[1] > self.height or pos[0] < 0 or pos[1] < 0:
             return True
         return False
+
+    def clock_tick(self):
+        self.clock.tick(60)
