@@ -41,6 +41,7 @@ class Wall(object):
         # pygame.draw.circle(screen, (0, 255, 0), self.collision_obj.position, 2)
         # pygame.draw.circle(screen, (0, 255, 255), self.collision_obj.position + (int(self.collision_obj.width), 0), 2)
 
-
+def clear():
+    object_list.clear()
 
 

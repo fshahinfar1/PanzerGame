@@ -5,6 +5,10 @@ import pygame
 import room_obj
 import menu_list_obj
 import label_obj
+import test_room
+import key_map_sets
+import panzer_obj
+import player_class
 from my_pygame_tools import Colors, Mouse
 pygame.init()
 cp = Colors()
@@ -16,6 +20,27 @@ class MainMenuRoom(room_obj.Room):
         self.menu = menu_list_obj.Menu((100, 100))  # Create a menu object
         self.init_label()  # Add labels to menu
         self.mouse = Mouse()
+        self.init_player()
+
+    def init_player(self):
+        # player1
+        key_set = key_map_sets.KeySetOne()
+        player_class.Player(key_set.keyboard, key_set.key_map, "player1")
+        # self.Players.append(player1)
+        key_set = key_map_sets.KeySetThree()
+        player_class.Player(key_set.keyboard, key_set.key_map, "player2")
+        # self.Players.append(player2)
+        # # player2
+        # key_set = key_map_sets.JoystickSetOne(0)
+        # panzer2 = panzer_obj.Panzer((60, 400), panzer_img, (54, 54), self.clock, self)
+        # # fixme key_set.key_map is not usable here
+        # player2 = player_class.Player(key_set.joystick, panzer2, key_set.key_map)
+        # self.Players.append(player2)
+
+    def destroy(self):
+        del self.menu
+        del self.mouse
+        room_obj.Room.destroy(self)
 
     def init_label(self):
         pos = (0, 0)
@@ -44,9 +69,16 @@ class MainMenuRoom(room_obj.Room):
         # todo add hover mode to menu and give some animation to it
         # todo for this I should check mouse hover on object
         if self.mouse.is_btn_pressed(1):
-            index, b = self.menu.mouse_on_index(self.mouse.get_pos())
-            if b:
+            index = self.menu.mouse_on_index(self.mouse.get_pos())
+            if index is not None:
                 print(index)
+                if index == 0:
+                    room = test_room.TestRoom(self.clock, "maps/map01.txt")
+                    self.set_next_room(room)
+                    self.goto_next_room()
+                    return
+                elif index == 4:
+                    self.quit_game()
 
     def draw_frame(self):
         self.screen.fill(cp.WHITE)  # clear display

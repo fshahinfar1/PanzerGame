@@ -21,7 +21,7 @@ class Room:
         return "Room: "+self.Name
 
     def destroy(self):
-        del self.clock
+        # del self.clock
         del self.screen
         del self.screen_size
         del self.flag_end

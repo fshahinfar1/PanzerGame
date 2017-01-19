@@ -80,8 +80,8 @@ class BulletBase(object):
             if isinstance(collide_object.get_parent(), wall_obj.Wall):
                 self.position = self.collision_obj.move_to_edge(collide_object, self.direction)
                 self.set_direction(reflect(self.direction, collide_object.get_colliding_surface_angle(self.collision_obj)))
-                print(self.direction, collide_object.get_colliding_surface_angle(self.collision_obj))
-                print(self.direction)
+                # print(self.direction, collide_object.get_colliding_surface_angle(self.collision_obj))
+                # print(self.direction)
             elif isinstance(collide_object.get_parent(), panzer_obj.Panzer):
                 tank = collide_object.get_parent()
                 if tank is not self.player.get_panzer():
@@ -90,7 +90,7 @@ class BulletBase(object):
                 self.destroy()
             elif collide_object.is_solid():
                 self.destroy()
-                print('{0} destroy by {1}'.format(self, collide_object))
+                # print('{0} destroy by {1}'.format(self, collide_object))
 
     def get_left_corner(self):
         return self.position - position_class.Position(self.size)/2
@@ -132,7 +132,7 @@ class TarKesh(BulletBase):
                 self.destroy()
             elif collide_object.is_solid():
                 self.destroy()
-                print('{0} destroy by {1}'.format(self, collide_object))
+                # print('{0} destroy by {1}'.format(self, collide_object))
 
 
 class TirKoloft(BulletBase):
@@ -265,7 +265,7 @@ class LaserBullet(BulletBase):
                 self.destroy()
             elif collide_object.is_solid():
                 self.destroy()
-                print('{0} destroy by {1}'.format(self, collide_object))
+                # print('{0} destroy by {1}'.format(self, collide_object))
 
     def line_length(self):
         list_temp = self.collision_points + [self.position]
@@ -332,7 +332,7 @@ class WiredLaserBullet(BulletBase):
                 self.add_collision_point(self.position)
             elif collide_object.is_solid():
                 self.destroy()
-                print('{0} destroy by {1}'.format(self, collide_object))
+                # print('{0} destroy by {1}'.format(self, collide_object))
 
     def update_collision_points(self):
         list_temp = self.collision_points + [self.position]

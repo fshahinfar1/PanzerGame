@@ -1,0 +1,54 @@
+### farbod shahinfar
+### PanzerGame
+### map_name: map01
+### 22/10/95
+#
+### Room Size
+Size: 800, 500
+#
+## Objects:
+#
+## border walls
+#     {(pos    ); dir;(size  )}
+Wall: {(0  ,0  ); 0  ;(800,14)}
+Wall: {(0  ,486); 0  ;(800,14)}
+Wall: {(-2 ,0  ); -90;(500,14)}
+Wall: {(784,0  ); -90;(500,14)}
+#
+## First Row Walls
+#
+Wall: {(148,100); -90;(54,14)}
+Wall: {(164,100); 0  ;(54,14)}
+Wall: {(218,100); 0  ;(54,14)}
+# Gap Horizontal
+Wall: {(336,100); 0  ;(54,14)}
+Wall: {(390,100); 0  ;(54,14)}
+# Gap Horizontal
+Wall: {(508,100); 0  ;(54,14)}
+Wall: {(562,100); 0  ;(54,14)}
+Wall: {(614,100); -90;(54,14)}
+## Second Row Walls
+# Gap Vertical
+Wall: {(148,218); -90;(54,14)}
+## Third Row Walls
+# Gap Vertical
+Wall: {(148,336); -90;(54,14)}
+Wall: {(164,390); 0  ;(54,14)}
+Wall: {(218,390); 0  ;(54,14)}
+# Gap Horizontal
+Wall: {(336,390); 0  ;(54,14)}
+Wall: {(390,390); 0  ;(54,14)}
+# Gap Horizontal
+# Gap Horizontal
+Wall: {(508,390); 0  ;(54,14)}
+Wall: {(562,390); 0  ;(54,14)}
+Wall: {(614,336); -90;(54,14)}
+#
+## Collectable Objects
+Collectable-Laser: {(255, 50)}
+Collectable-TirKoloft: {(50, 255)}
+#
+## TankStratPoint
+Start_Point: {(60,60)}
+Start_Point: {(60,400)}
+# End of Map

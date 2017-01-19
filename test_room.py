@@ -3,42 +3,42 @@
 # Test Room
 import pygame
 import room_obj
-import panzer_obj
 import player_class
+import wall_obj
 import map_obj
-import key_map_sets
 import fire_load
 import collectable_object
+import image_class
+import collision_tools
 import my_pygame_tools as tools
+from random import randrange
+import sys
 cp = tools.Colors()
 
 
 class TestRoom(room_obj.Room):
-    def __init__(self, clock):
+    def __init__(self, clock, map):
         room_obj.Room.__init__(self, 'Test', clock=clock)  # create room with name Test
-        # init_player
-        self.Players = []
-        self.init_player()
-        # walls
-        self.wall_list = map_obj.get_walls("maps/map01.txt")
-        # collectable objects
-        collectable_object.LaserObject((250, 60))
-        collectable_object.TirKoloftObject((60, 250))
+        # walls/ collectable objects/ ...
+        map_obj.load(map)
+        # ready_players_tank
+        tank_start_point = map_obj.get_start_points(map)
+        for player in player_class.player_list:
+            img = pygame.image.load("images/panzer.png").convert_alpha()
+            idx = randrange(len(tank_start_point))
+            pos = tank_start_point[idx]
+            del tank_start_point[idx]
+            player.ready_panzer(img, pos, self.clock, self)
         self.mouse = tools.Mouse()
 
-    def init_player(self):
-        panzer_img = pygame.image.load("images/panzer.png")
-        # player1
-        key_set = key_map_sets.KeySetOne()
-        panzer1 = panzer_obj.Panzer((60, 60), panzer_img, (54, 54), self.clock, self)
-        player1 = player_class.Player(key_set.keyboard, panzer1, key_set.key_map)
-        self.Players.append(player1)
-        # # player2
-        # key_set = key_map_sets.JoystickSetOne(0)
-        # panzer2 = panzer_obj.Panzer((60, 400), panzer_img, (54, 54), self.clock, self)
-        # # fixme key_set.key_map is not usable here
-        # player2 = player_class.Player(key_set.joystick, panzer2, key_set.key_map)
-        # self.Players.append(player2)
+    def destroy(self):
+        room_obj.Room.destroy(self)
+        # del self.Players
+        del self.mouse
+        collectable_object.clear()
+        collision_tools.clear()
+        fire_load.clear()
+        wall_obj.clear()
 
     def process_events(self):
         events = pygame.event.get()
@@ -47,16 +47,23 @@ class TestRoom(room_obj.Room):
                 self.flag_GameOver = True
                 self.flag_end = True
             elif event.type == pygame.KEYDOWN or event.type == pygame.KEYUP:
-                for player in self.Players:
-                    if player.controller_type() == "keyboard":
-                        player.get_controller().get_event(event)
+                for player in player_class.player_list:
+                    if not player.killed:
+                        if player.controller_type() == "keyboard":
+                            player.get_controller().get_event(event)
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 self.mouse.event_btn_pressed(event)
             elif event.type == pygame.MOUSEBUTTONUP:
                 self.mouse.event_btn_released(event)
 
     def run_logic(self):
-        for player in self.Players:
+        print(len(collision_tools.collidable_objects))
+        if player_class.active_player()< 2:
+            self.change_map()
+            return
+        for player in player_class.player_list:
+            if player.killed:
+                continue
             if player.controller_type() == "keyboard":
                 # turn
                 if player.key_map['rotate_right'].check_hold():
@@ -99,13 +106,26 @@ class TestRoom(room_obj.Room):
             print('right_btn_pressed')
 
         # object loop
-        [player.get_panzer().loop() for player in self.Players]
+        [player.get_panzer().loop() for player in player_class.player_list if not player.killed]
         [load.loop() for load in fire_load.FireLoadObjectsList]
 
     def draw_frame(self):
         self.screen.fill(cp.WHITE)  # clear display
-        [wall.draw(self.screen) for wall in self.wall_list]  # draw walls
+        [wall.draw(self.screen) for wall in wall_obj.object_list]  # draw walls
         [obj.draw(self.screen) for obj in collectable_object.object_list]  # draw collectable objects
-        [player.get_panzer().draw(self.screen) for player in self.Players]  # draw tanks
+        [player.get_panzer().draw(self.screen) for player in player_class.player_list if not player.killed]  # draw tanks
         [load.draw(self.screen) for load in fire_load.FireLoadObjectsList]  # draw bullets
+        [ani.draw(self.screen) for ani in image_class.object_list]
+        k = 0
+        for player in player_class.player_list:
+            pos = (50+k*120, 450)
+            player.draw(self.screen, pos)
+            k += 1
         pygame.display.update()  # update display
+
+    def change_map(self):
+        print("map_changed")
+        self.destroy()
+        player_class.activate_all_players()
+        self.__init__(self.clock, "maps/map01.txt")
+

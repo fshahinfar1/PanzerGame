@@ -2,7 +2,6 @@
 # MyPyGameTools
 # version 0.000beta
 # last update : 22/10/95
-from __future__ import division
 import pygame
 from math import sin, cos, atan, degrees, radians
 
@@ -308,3 +307,4 @@ def reflect(degree, surface_degree):
 def draw_polyline(screen, color, list_point, width=1):
     for i in range(len(list_point)-1):
         pygame.draw.line(screen, color, list_point[i], list_point[i+1], width)
+

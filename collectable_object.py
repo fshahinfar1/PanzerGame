@@ -73,3 +73,6 @@ class LaserObject(CollectableObject):
         other.set_bullet_type(fire_load.LaserBullet)
         other.Gun = fire_load.LaserGun(other.calculate_directional_position(other.position, 28 + abs(other.speed)), other.direction, other)
 
+
+def clear():
+    object_list.clear()

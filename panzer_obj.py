@@ -131,8 +131,6 @@ class Panzer(object):
         collide_object = collision_tools.is_colliding(self.collision_obj, new_pos, self.collision_obj)
         if collide_object is not None:
             if collide_object.is_solid():
-                print(self.speed)
-                print("will collide at {0} with {1}".format(new_pos, str(collide_object)))
                 self.set_acceleration(0)
                 self.set_speed(0)
                 return  # Done updating position
@@ -190,4 +188,3 @@ class Panzer(object):
         self.add_friction()
         if self.timer.is_time():
             self.flag_ready_fire = True
-            print("ready to fire")

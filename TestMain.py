@@ -29,7 +29,7 @@ def main(game, game_state):
         game.run_logic()
         game.draw_frame()
         game_state = game.is_end()
-        clock.tick(60)
+        game.clock_tick()
     return game_state
 
 states = main(room, states)

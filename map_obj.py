@@ -34,6 +34,7 @@ def load(file_add):
                 data_string = remove_title(line, 'Collectable-TirKoloft').strip()
                 collectable_pos = brace_data(data_string, 0)
                 collectable_object.TirKoloftObject(collectable_pos)
+    map_file.close()
 
 
 def get_walls(file_add):
@@ -49,6 +50,19 @@ def get_walls(file_add):
             wall_dir = brace_data(data_string, 1)
             wall_size = brace_data(data_string, 2)
             wall_obj.Wall(wall_image, wall_size, wall_pos, wall_dir)
+    map_file.close()
+
+
+def get_start_points(file_add):
+    points = []
+    map_file = open(file_add, 'r')
+    for line in map_file:
+        if line[0] == '#':
+            continue
+        elif 'Start_Point' in line:
+            data_string = remove_title(line, "Start_Point").strip()
+            points.append(brace_data(data_string, 0))
+    return points
 
 
 def remove_title(string, title):

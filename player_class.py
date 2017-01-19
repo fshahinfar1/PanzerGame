@@ -3,25 +3,32 @@
 # 22/10/95
 # player class
 import label_obj
+import panzer_obj
+import pygame
 from my_pygame_tools import KeyboardHandler
 from pygame import joystick
+
 player_list = []
 
 
 class Player(object):
-    def __init__(self, controller, panzer, key_map, name):
+    def __init__(self, controller, key_map, name):
         # if using joystick then it should be supplied if keyboard a keyboard handler should be given
         self.name = name
         self.controller = controller
         self.key_map = key_map
-        self.panzer = panzer
+        self.panzer = None
         self.score = 0
         self.killed = False
         player_list.append(self)
 
+    def ready_panzer(self, img, pos, clock, room):
+        self.panzer = panzer_obj.Panzer(pos, img, (54, 54), clock, room)
+        self.panzer.player = self
+
     def destroy(self):
         player_list.remove(self)
-        self.panzer.destroy()
+        # self.panzer.destroy()
 
     def get_panzer(self):
         return self.panzer
@@ -45,3 +52,16 @@ class Player(object):
 
 def clear():
     player_list.clear()
+
+
+def activate_all_players():
+    for p in player_list:
+        p.killed = False
+
+
+def active_player():
+    c = 0
+    for p in player_list:
+        if not p.killed:
+            c += 1
+    return c
