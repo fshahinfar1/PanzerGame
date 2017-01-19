@@ -20,7 +20,7 @@ def load(file_add):
         elif 'Wall' in line:
             data_string = remove_title(line, 'Wall')
             data_string = data_string.strip()
-            wall_image = pygame.image.load('images/wall.png')
+            wall_image = pygame.image.load('images/wall.png').convert_alpha()
             wall_pos = brace_data(data_string, 0)
             wall_dir = brace_data(data_string, 1)
             wall_size = brace_data(data_string, 2)
@@ -44,7 +44,7 @@ def get_walls(file_add):
         elif 'Wall' in line:
             data_string = remove_title(line, 'Wall')
             data_string = data_string.strip()
-            wall_image = pygame.image.load('images/wall.png')
+            wall_image = pygame.image.load('images/wall.png').convert_alpha()
             wall_pos = brace_data(data_string, 0)
             wall_dir = brace_data(data_string, 1)
             wall_size = brace_data(data_string, 2)
