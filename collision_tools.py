@@ -2,11 +2,12 @@
 # 25/10/95
 # collision tools
 import position_class
-from my_pygame_tools import distance, sgn
+from my_pygame_tools import distance, sgn, calculate_directional_position
 from math import sin, cos, radians
 # key: object
 # value: position
 collidable_objects = {}  # a dictionary of all objects of collision type
+count = 0
 
 
 class CollisionCircle(object):
@@ -17,10 +18,18 @@ class CollisionCircle(object):
         self.parent = link_object
         self.solid = solid
         # add object to collidabel_objects dictionary
-        collidable_objects[self] = self.position
+        global count
+        self.id = count
+        collidable_objects[self.id] = self
+        count += 1
 
     def destroy(self):
-        del collidable_objects[self]
+        del collidable_objects[self.id]
+        del self.position
+        del self.radius
+        del self.parent
+        del self.solid
+        del self.id
 
     def __str__(self):
         return "Circle at {0}".format(self.position)
@@ -102,10 +111,11 @@ class CollisionCircle(object):
         # fixme direction of the panzer will affect this and \
         # fixme there is a huge problem on left side and will moving backward
         # fixme it is so cpu consuming
-        dp = 0.1
+        dp = 2
         theta = radians(direction)
         while self.is_colliding_with(other):
             self.position -= (dp * cos(theta), dp * sin(theta))
+            # self.set_position(calculate_directional_position(direction-180, self.position, dp))
         return self.position
 
 
@@ -117,10 +127,20 @@ class CollisionFixRectangle(object):
         self.parent = link_object
         self.solid = solid
         # add object to collidabel objects dictionary
-        collidable_objects[self] = self.position
+
+        global count
+        self.id = count
+        collidable_objects[self.id] = self
+        count += 1
 
     def destroy(self):
-        del collidable_objects[self]
+        del collidable_objects[self.id]
+        del self.position
+        del self.width
+        del self.height
+        del self.parent
+        del self.solid
+        del self.id
 
     def __str__(self):
         return "FixRectangle at {0}".format(self.position)
@@ -169,7 +189,7 @@ class CollisionFixRectangle(object):
         if not isinstance(other, (CollisionCircle, CollisionFixRectangle, CollisionPoint)):
             raise TypeError
         other_x, other_y = other.get_position()
-        if other_x < self.position[0] or other_x > self.position[0] + self.width:
+        if other_x < self.position[0] or other_x > self.position[0] + self.width+1 :
             return 90
         else:
             return 0
@@ -248,13 +268,14 @@ def is_colliding(obj, pos, *args):
          item is a tuple (collision_object, position_object)
          so item[0] is collision object
         """
-        if item[0] not in list(args):
-            if obj.will_collide_with_at(item[0], pos):
-                return item[0]
+        if item[1] not in list(args):
+            if obj.will_collide_with_at(item[1], pos):
+                return item[1]
     return None
 
 
 def get_object_may_collide(obj, range_radius, *args):
+    # major changes it will crash change before use
     result = []
     if not isinstance(obj, (CollisionCircle, CollisionFixRectangle)):
         print('Type error in function get_object_may_collide in Collision_tools')
@@ -279,3 +300,7 @@ def update_collidable_objects_list_position():
     # fixme It looks it is not working
     for item in collidable_objects:
         collidable_objects[item] = item.get_position()
+
+
+def clear():
+    collidable_objects.clear()
