@@ -41,6 +41,7 @@ class JoystickSetOne:
     def __init__(self, joystick_set_number):
         pg.joystick.init()
         if pg.joystick.get_count() < 1:
+            print("Error: please connect game pad !!!")
             raise
         self.joystick = pg.joystick.Joystick(joystick_set_number)
         self.joystick.init()

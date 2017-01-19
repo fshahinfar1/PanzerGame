@@ -45,7 +45,7 @@ class Player(object):
         self.score += value
 
     def draw(self, screen, pos):
-        label = label_obj.Label(self.name + ": " + str(self.score), pos, (0, 0, 0))
+        label = label_obj.Label(self.name + ": " + str(self.score), pos, (100, 120, 160))
         label.draw(screen)
 
 

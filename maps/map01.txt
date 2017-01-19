@@ -49,6 +49,7 @@ Collectable-Laser: {(255, 50)}
 Collectable-TirKoloft: {(50, 255)}
 #
 ## TankStratPoint
-Start_Point: {(60,60)}
-Start_Point: {(60,400)}
+Start_Point: {(60 ,60 ); (0  )}
+Start_Point: {(60 ,400); (0  )}
+Start_Point: {(750,60 ); (180)}
 # End of Map

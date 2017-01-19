@@ -115,10 +115,10 @@ class TestRoom(room_obj.Room):
 
     def draw_frame(self):
         self.screen.fill(cp.WHITE)  # clear display
-        [wall.draw(self.screen) for wall in wall_obj.object_list]  # draw walls
         [obj.draw(self.screen) for obj in collectable_object.object_list]  # draw collectable objects
         [player.get_panzer().draw(self.screen) for player in player_class.player_list if not player.killed]  # draw tanks
         [load.draw(self.screen) for load in fire_load.FireLoadObjectsList]  # draw bullets
+        [wall.draw(self.screen) for wall in wall_obj.object_list]  # draw walls
         [ani.draw(self.screen) for ani in image_class.object_list]
         k = 0
         for player in player_class.player_list:
