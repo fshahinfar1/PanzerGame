@@ -10,7 +10,7 @@ pygame.font.init()
 
 
 class Label:
-    def __init__(self, text, pos, color, font=pygame.font.SysFont('serif', 20, True, False), click_able = False):
+    def __init__(self, text, pos, color, font=pygame.font.SysFont('serif', 20, True, False), click_able=False):
         self.label_name = text
         self.text_str = text
         self.pos = position_class.Position(pos)
@@ -26,6 +26,20 @@ class Label:
             if self.label_name == other.label_name:
                 return True
         return False
+
+    def __del__(self):
+        self.destroy()
+
+    def destroy(self):
+        del self.label_name
+        del self.text_str
+        del self.pos
+        del self.color
+        del self.font
+        del self.render
+        del self.click_able
+        del self.background
+        del self.background_size
 
     def get_name(self):
         return self.label_name

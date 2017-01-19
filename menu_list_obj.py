@@ -16,6 +16,17 @@ class Menu:
         self.size = (0, 0)
         self.padding = [10, 10, 50]  # top, left, between
 
+    def __del__(self):
+        self.destroy()
+
+    def destroy(self):
+        self.label_list.clear()
+        del self.label_list
+        del self.count_labels
+        del self.pos
+        del self.size
+        del self.padding
+
     def get_size(self):
         return self.size
 

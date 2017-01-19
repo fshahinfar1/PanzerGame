@@ -4,12 +4,16 @@
 import time
 
 
-
 class Timer(object):
     def __init__(self, duration):
         self.set_time = time.time()
         self.time_duration = duration  # second
         self.is_set = False
+
+    def destroy(self):
+        del self.set_time
+        del self.time_duration
+        del self.is_set
 
     def is_time(self):
         if self.is_set:

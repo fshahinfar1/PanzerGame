@@ -18,7 +18,11 @@ class CollectableObject(object):
         object_list.append(self)
 
     def destroy(self):
+        del self.position
+        del self.size
+        del self.image
         self.collision_object.destroy()
+        del self.collision_object
         object_list.remove(self)
 
     def get_size(self):
@@ -48,7 +52,7 @@ class CollectableObject(object):
 
 class TirKoloftObject(CollectableObject):
     def __init__(self, pos):
-        img = pygame.image.load("images/laser.png")
+        img = pygame.image.load("images/laser.png").convert_alpha()
         img = pygame.transform.scale(img, (16, 16))
         CollectableObject.__init__(self, img, pos)
 
@@ -60,7 +64,7 @@ class TirKoloftObject(CollectableObject):
 class LaserObject(CollectableObject):
 
     def __init__(self, pos):
-        img = pygame.image.load("images/laser.png")
+        img = pygame.image.load("images/laser.png").convert_alpha()
         img = pygame.transform.scale(img, (16, 16))
         CollectableObject.__init__(self, img, pos)
 
