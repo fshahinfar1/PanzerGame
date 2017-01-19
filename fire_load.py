@@ -6,6 +6,7 @@ import position_class
 import collision_tools
 import wall_obj
 import timer_obj
+import panzer_obj
 from math import degrees,radians, sin, cos, atan2
 from my_pygame_tools import reflect, calculate_directional_position, distance, draw_polyline
 from random import randrange
@@ -13,7 +14,7 @@ FireLoadObjectsList = []
 
 
 class BulletBase(object):
-    def __init__(self, pos, direction=0, speed=0, image=None, size=None, collision_object=None, t=5, room=None):
+    def __init__(self, pos, direction=0, speed=0, image=None, size=None, collision_object=None, t=5, room=None, player=None):
         self.size = size
         self.image_original = image
         # todo it is a good idea to create a class able to handle animation and use it instead
@@ -27,15 +28,26 @@ class BulletBase(object):
         self.room = room  # room which this object is in
         self.timer = timer_obj.Timer(t)  # t sec to self destruction
         self.timer.set_timer()  # start of timer is creation time
+        self.player = player
         FireLoadObjectsList.append(self)  # add self to object list
 
     def __str__(self):
         return "Bullet"
 
     def destroy(self):
+        del self.size
+        del self.image_original
+        del self.image
+        del self.position
+        del self.speed
+        del self.direction
         self.collision_obj.destroy()
+        del self.collision_obj
+        del self.room
+        self.timer.destroy()
+        del self.timer
+        del self.player
         FireLoadObjectsList.remove(self)
-        del self  # does it do anything or not??
 
     def calculate_new_position(self):
         # move with constant speed
@@ -68,6 +80,14 @@ class BulletBase(object):
             if isinstance(collide_object.get_parent(), wall_obj.Wall):
                 self.position = self.collision_obj.move_to_edge(collide_object, self.direction)
                 self.set_direction(reflect(self.direction, collide_object.get_colliding_surface_angle(self.collision_obj)))
+                print(self.direction, collide_object.get_colliding_surface_angle(self.collision_obj))
+                print(self.direction)
+            elif isinstance(collide_object.get_parent(), panzer_obj.Panzer):
+                tank = collide_object.get_parent()
+                if tank is not self.player.get_panzer():
+                    self.player.add_score(1)
+                tank.destroy()
+                self.destroy()
             elif collide_object.is_solid():
                 self.destroy()
                 print('{0} destroy by {1}'.format(self, collide_object))
@@ -76,23 +96,25 @@ class BulletBase(object):
         return self.position - position_class.Position(self.size)/2
 
     def draw(self, screen):
+        self.image.set_colorkey((255, 0, 255))
         screen.blit(self.image, self.get_left_corner())
 
 
 class BouncyFireLoad(BulletBase):
-    def __init__(self, pos, direction, speed=8, room=None):
-        img = pygame.image.load("./images/bouncy_fire_load.png")
+    def __init__(self, pos, direction, speed=8, room=None, player=None):
+        img = pygame.image.load("./images/bouncy_fire_load.png").convert_alpha()
+        img.set_colorkey((255, 0, 255))
         size = (10, 10)
         collision_obj = collision_tools.CollisionCircle(pos, 5, self)
-        BulletBase.__init__(self, pos, direction, speed, img, size, collision_obj, 5, room)
+        BulletBase.__init__(self, pos, direction, speed, img, size, collision_obj, 5, room, player)
 
 
 class TarKesh(BulletBase):
-    def __init__(self, pos, direction, speed=6, room=None):
-        img = pygame.image.load("./images/TarKesh.png")
+    def __init__(self, pos, direction, speed=6, room=None, player=None):
+        img = pygame.image.load("./images/TarKesh.png").convert_alpha()
         size = (8, 8)
         collision_obj = collision_tools.CollisionCircle(pos, 4, self)
-        BulletBase.__init__(self, pos, direction, speed, img, size, collision_obj, 2, room)
+        BulletBase.__init__(self, pos, direction, speed, img, size, collision_obj, 2, room, player)
 
     def loop(self):
         if self.timer.is_time():
@@ -102,22 +124,28 @@ class TarKesh(BulletBase):
         self.update_position()
         collide_object = collision_tools.is_colliding(self.collision_obj, self.position, self.collision_obj)
         if collide_object is not None:
-            if collide_object.is_solid():
+            if isinstance(collide_object.get_parent(), panzer_obj.Panzer):
+                tank = collide_object.get_parent()
+                if tank is not self.player.get_panzer():
+                    self.player.add_score(1)
+                tank.destroy()
+                self.destroy()
+            elif collide_object.is_solid():
                 self.destroy()
                 print('{0} destroy by {1}'.format(self, collide_object))
 
 
 class TirKoloft(BulletBase):
-    def __init__(self, pos, direction, speed=5, room=None):
-        img = pygame.image.load("./images/bouncy_fire_load.png")
+    def __init__(self, pos, direction, speed=5, room=None, player=None):
+        img = pygame.image.load("./images/bouncy_fire_load.png").convert_alpha()
         size = (16, 16)
         collision_obj = collision_tools.CollisionCircle(pos, 8, self)
-        BulletBase.__init__(self, pos, direction, speed, img, size, collision_obj, 5, room)
+        BulletBase.__init__(self, pos, direction, speed, img, size, collision_obj, 5, room, player)
 
     def destroy(self):
         for i in range(20):
             direction = randrange(0, 361)
-            TarKesh(self.position, direction, room=self.room)
+            TarKesh(self.position, direction, player=self.player, room=self.room)
         BulletBase.destroy(self)
 
 
@@ -135,9 +163,16 @@ class LaserGun(object):
         FireLoadObjectsList.append(self)
 
     def destroy(self):
+        del self.fire_position
+        del self.fire_direction
+        del self.direction
         self.collision_object.destroy()
+        del self.collision_object
+        del self.fire_state
+        del self.length
+        del self.break_points
+        del self.panzer
         FireLoadObjectsList.remove(self)
-        del self  # does it do anything or not??
 
     def set_direction(self, value, rel=False, update=True):
         if rel:
@@ -175,7 +210,7 @@ class LaserGun(object):
 
     def fire(self, room):
         self.fire_state = 'Fire'
-        LaserBullet(self.fire_position, self.fire_direction, room=room)
+        LaserBullet(self.fire_position, self.fire_direction, room=room, player=self.panzer.player)
 
     def loop(self):
         self.set_position(self.panzer.calculate_directional_position(self.panzer.position, 28 + abs(self.panzer.speed)),
@@ -192,13 +227,19 @@ class LaserGun(object):
 
 
 class LaserBullet(BulletBase):
-    def __init__(self, pos, direction, speed=20, room=None):
+    def __init__(self, pos, direction, speed=20, room=None, player=None):
         size = (2, 2)
-        image = pygame.image.load("./images/laser_bullet.png")
+        image = pygame.image.load("./images/laser_bullet.png").convert_alpha()
         collision_obj = collision_tools.CollisionPoint(pos, self)
-        BulletBase.__init__(self, pos, direction, speed, image, size, collision_obj, 3, room)
+        BulletBase.__init__(self, pos, direction, speed, image, size, collision_obj, 3, room, player)
         self.collision_points = [pos]
         self.length = 100
+
+    def destroy(self):
+        BulletBase.destroy(self)
+        self.collision_points.clear()
+        del self.collision_points
+        del self.length
 
     def add_collision_point(self, p):
         self.collision_points.append(p)
@@ -216,6 +257,12 @@ class LaserBullet(BulletBase):
                 self.position = self.collision_obj.move_to_edge(collide_object, self.direction)
                 self.set_direction(reflect(self.direction, collide_object.get_colliding_surface_angle(self.collision_obj)))
                 self.add_collision_point(self.position)
+            elif isinstance(collide_object.get_parent(), panzer_obj.Panzer):
+                tank = collide_object.get_parent()
+                if tank is not self.player.get_panzer():
+                    self.player.add_score(1)
+                tank.destroy()
+                self.destroy()
             elif collide_object.is_solid():
                 self.destroy()
                 print('{0} destroy by {1}'.format(self, collide_object))
@@ -254,11 +301,18 @@ class LaserBullet(BulletBase):
 class WiredLaserBullet(BulletBase):
     def __init__(self, pos, direction, speed=3, room=None):
         size = (2, 2)
-        image = pygame.image.load("./images/laser_bullet.png")
+        image = pygame.image.load("./images/laser_bullet.png").convert_alpha()
         collision_obj = collision_tools.CollisionPoint(pos, self)
         BulletBase.__init__(self, pos, direction, speed, image, size, collision_obj, 500, room)
+        collision_obj.destroy()
         self.collision_points = [pos]
         self.length = 100
+
+    def destroy(self):
+        BulletBase.destroy(self)
+        self.collision_points.clear()
+        del self.collision_points
+        del self.length
 
     def add_collision_point(self, p):
         self.collision_points.append(p)
@@ -304,5 +358,7 @@ class WiredLaserBullet(BulletBase):
         pygame.draw.aalines(screen, blue, False, self.collision_points + [self.position])
 
 
+def clear():
+    FireLoadObjectsList.clear()
 
 
