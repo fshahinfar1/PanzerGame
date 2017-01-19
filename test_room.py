@@ -10,6 +10,7 @@ import fire_load
 import collectable_object
 import image_class
 import collision_tools
+import timer_obj
 import my_pygame_tools as tools
 from random import randrange
 import sys
@@ -24,12 +25,13 @@ class TestRoom(room_obj.Room):
         # ready_players_tank
         tank_start_point = map_obj.get_start_points(map)
         for player in player_class.player_list:
-            img = pygame.image.load("images/panzer.png").convert_alpha()
             idx = randrange(len(tank_start_point))
-            pos = tank_start_point[idx]
+            pos = tank_start_point[idx][0]
+            dire = tank_start_point[idx][1]
             del tank_start_point[idx]
-            player.ready_panzer(img, pos, self.clock, self)
+            player.ready_panzer(pos, dire, self.clock, self)
         self.mouse = tools.Mouse()
+        self.timer = timer_obj.Timer(3)  # 3 sec
 
     def destroy(self):
         room_obj.Room.destroy(self)
@@ -59,8 +61,10 @@ class TestRoom(room_obj.Room):
     def run_logic(self):
         print(len(collision_tools.collidable_objects))
         if player_class.active_player()< 2:
-            self.change_map()
-            return
+            self.timer.set_timer()
+            if self.timer.is_time():
+                self.change_map()
+                return
         for player in player_class.player_list:
             if player.killed:
                 continue

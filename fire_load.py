@@ -29,6 +29,7 @@ class BulletBase(object):
         self.timer = timer_obj.Timer(t)  # t sec to self destruction
         self.timer.set_timer()  # start of timer is creation time
         self.player = player
+        self.d = False
         FireLoadObjectsList.append(self)  # add self to object list
 
     def __str__(self):
@@ -48,6 +49,7 @@ class BulletBase(object):
         del self.timer
         del self.player
         FireLoadObjectsList.remove(self)
+        self.d = True
 
     def calculate_new_position(self):
         # move with constant speed
@@ -121,7 +123,9 @@ class TarKesh(BulletBase):
             self.destroy()
             return
         # all collision logic of the bullet is here
-        self.update_position()
+        if self.update_position():
+            return
+        print(self.d)
         collide_object = collision_tools.is_colliding(self.collision_obj, self.position, self.collision_obj)
         if collide_object is not None:
             if isinstance(collide_object.get_parent(), panzer_obj.Panzer):
@@ -171,6 +175,7 @@ class LaserGun(object):
         del self.fire_state
         del self.length
         del self.break_points
+        self.panzer.Gun = None
         del self.panzer
         FireLoadObjectsList.remove(self)
 

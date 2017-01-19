@@ -14,7 +14,7 @@ from my_pygame_tools import sgn
 
 
 class Panzer(object):
-    def __init__(self, pos, image, size, clock, player=None, room=None):
+    def __init__(self, pos, image, size, clock, player=None, room=None, direction=0):
         # position
         self.position = position_class.Position(pos)  # center of panzer
         self.speed = 0
@@ -26,7 +26,7 @@ class Panzer(object):
         self.size = size
         self.clock = clock
         # collision
-        self.collision_obj = collision_tools.CollisionCircle(self.position, 16, self, solid=True)
+        self.collision_obj = collision_tools.CollisionCircle(self.position, 20, self, solid=True)
         # fire
         self.flag_ready_fire = True
         self.timer = timer_obj.Timer(1)  # reload timer
@@ -34,6 +34,7 @@ class Panzer(object):
         self.bullet_type = fire_load.BouncyFireLoad
         self.Gun = None
         self.player = player
+        self.set_direction(direction)
 
     def destroy(self):
         image_class.Explosion(self.get_top_left_corner())
@@ -53,6 +54,8 @@ class Panzer(object):
         del self.timer
         del self.room
         del self.bullet_type
+        if self.Gun is not None:
+            self.Gun.destroy()
         del self.Gun
         del self.player
 

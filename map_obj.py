@@ -61,7 +61,9 @@ def get_start_points(file_add):
             continue
         elif 'Start_Point' in line:
             data_string = remove_title(line, "Start_Point").strip()
-            points.append(brace_data(data_string, 0))
+            pos = brace_data(data_string, 0)
+            dire = brace_data(data_string, 1)
+            points.append((pos, dire))
     return points
 
 
