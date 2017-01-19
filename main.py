@@ -22,12 +22,14 @@ def main(game, game_state):
 
     game_state = ( flag_end, flag_GameOver )
     """
-    while not game_state[0]:
+    while not (game_state[0] or game_state[1]):
+        if game.flag_pause:
+            continue
+        game.draw_frame()
         game.process_events()
         game.run_logic()
-        game.draw_frame()
         game_state = game.is_end()
-        clock.tick(60)
+        game.clock_tick()
     return game_state
 
 clock = pygame.time.Clock()
@@ -40,15 +42,8 @@ while True:
         pygame.quit()
         sys.exit()
     else:  # else it is time to switch the room
-        pass
-        # rooms = ['BoardRoom', 'FightScene']
-        # if room.get_name() == rooms[0]:  # if we were in board room so lets grab our plans and go to fight scene
-        #     grids = room.grab_grids()  # tuple of two grids
-        #     ships = room.grab_ships()  # tuple of two ship_lists
-        #     room = fight_scene.Game(ships, grids)
-        #     states = room.IsEnd()
-        # elif room.get_name() == rooms[1]:
-        #     # if we were in fight scene then lets go to board room for better plan for next round
-        #     room = board_room.BoardRoom()
-        #     states = room.IsEnd()
-        # states = main(room, states)  # Lets Go
+        t = room
+        room = room.get_next_room()
+        states = room.is_end()
+        states = main(room, states)
+        t.destroy()

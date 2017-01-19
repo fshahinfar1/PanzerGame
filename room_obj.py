@@ -10,11 +10,24 @@ class Room:
         self.Name = name  # Room name
         self.flag_end = False  # represents if room is end
         self.flag_GameOver = False  # Game End (all done quit)
+        self.flag_pause = False
         self.screen_size = self.width, self.height = size
         self.screen = pygame.display.set_mode(self.screen_size)
         pygame.display.set_caption(caption)
         self.clock = clock
         self.next_room = next_room
+
+    def __str__(self):
+        return "Room: "+self.Name
+
+    def destroy(self):
+        del self.clock
+        del self.screen
+        del self.screen_size
+        del self.flag_end
+        del self.Name
+        del self.flag_GameOver
+        del self.next_room
 
     def get_name(self):
         return self.Name
