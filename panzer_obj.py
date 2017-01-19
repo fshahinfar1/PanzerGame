@@ -8,12 +8,13 @@ import collision_tools
 import timer_obj
 import fire_load
 import collectable_object
+import image_class
 from math import sin, cos, radians
-from my_pygame_tools import sgn, KeyboardHandler
+from my_pygame_tools import sgn
 
 
 class Panzer(object):
-    def __init__(self, pos, image, size, clock, room=None):
+    def __init__(self, pos, image, size, clock, player=None, room=None):
         # position
         self.position = position_class.Position(pos)  # center of panzer
         self.speed = 0
@@ -32,6 +33,28 @@ class Panzer(object):
         self.room = room
         self.bullet_type = fire_load.BouncyFireLoad
         self.Gun = None
+        self.player = player
+
+    def destroy(self):
+        image_class.Explosion(self.get_top_left_corner())
+        if self.player is not None:
+            self.player.killed = True
+        del self.position
+        del self.speed
+        del self.acceleration
+        del self.direction
+        del self.original_image
+        del self.image
+        del self.size
+        del self.clock
+        self.collision_obj.destroy()
+        del self.collision_obj
+        del self.flag_ready_fire
+        del self.timer
+        del self.room
+        del self.bullet_type
+        del self.Gun
+        del self.player
 
     def get_position(self):
         return self.position
@@ -121,17 +144,18 @@ class Panzer(object):
     def fire(self, bullet_type):
         if bullet_type in (fire_load.BouncyFireLoad, fire_load.TirKoloft):
             bullet_type(self.calculate_directional_position(self.position, 20+28+abs(self.speed)), self.direction,\
-                        room=self.room)
+                        room=self.room, player=self.player)
         elif bullet_type == fire_load.LaserBullet:
             self.Gun.fire(self.room)
             self.Gun.destroy()
         self.bullet_type = fire_load.BouncyFireLoad
 
+    def get_top_left_corner(self):
+        return self.position - (position_class.Position(self.image.get_rect().size)/2)
+
     def draw(self, screen):
         #draw
-        left_top_corner = [0, 0]
-        left_top_corner[0] = self.position[0] - self.image.get_size()[0]/2
-        left_top_corner[1] = self.position[1] - self.image.get_size()[1]/2
+        left_top_corner = self.get_top_left_corner()
         screen.blit(self.image, left_top_corner)
         # pygame.draw.circle(screen, (0, 0, 0), self.collision_obj.position.int_cordinates(), self.collision_obj.radius, 0)
         # pygame.draw.circle(screen, (0, 255, 0), self.collision_obj.position.int_cordinates(), 2, 0)
