@@ -29,11 +29,13 @@ class BulletBase(object):
         self.timer = timer_obj.Timer(t)  # t sec to self destruction
         self.timer.set_timer()  # start of timer is creation time
         self.player = player
-        self.d = False
         FireLoadObjectsList.append(self)  # add self to object list
 
     def __str__(self):
         return "Bullet"
+
+    def get_position(self):
+        return self.position
 
     def destroy(self):
         del self.size
@@ -49,7 +51,6 @@ class BulletBase(object):
         del self.timer
         del self.player
         FireLoadObjectsList.remove(self)
-        self.d = True
 
     def calculate_new_position(self):
         # move with constant speed
@@ -103,7 +104,7 @@ class BulletBase(object):
 
 
 class BouncyFireLoad(BulletBase):
-    def __init__(self, pos, direction, speed=8, room=None, player=None):
+    def __init__(self, pos, direction, speed=4, room=None, player=None):
         img = pygame.image.load("./images/bouncy_fire_load.png").convert_alpha()
         img.set_colorkey((255, 0, 255))
         size = (10, 10)
@@ -125,7 +126,6 @@ class TarKesh(BulletBase):
         # all collision logic of the bullet is here
         if self.update_position():
             return
-        print(self.d)
         collide_object = collision_tools.is_colliding(self.collision_obj, self.position, self.collision_obj)
         if collide_object is not None:
             if isinstance(collide_object.get_parent(), panzer_obj.Panzer):
@@ -150,6 +150,7 @@ class TirKoloft(BulletBase):
         for i in range(20):
             direction = randrange(0, 361)
             TarKesh(self.position, direction, player=self.player, room=self.room)
+        self.player.get_panzer().set_bullet_type(BouncyFireLoad)
         BulletBase.destroy(self)
 
 
@@ -175,6 +176,7 @@ class LaserGun(object):
         del self.fire_state
         del self.length
         del self.break_points
+        self.panzer.set_bullet_type(BouncyFireLoad)
         self.panzer.Gun = None
         del self.panzer
         FireLoadObjectsList.remove(self)
@@ -232,7 +234,7 @@ class LaserGun(object):
 
 
 class LaserBullet(BulletBase):
-    def __init__(self, pos, direction, speed=20, room=None, player=None):
+    def __init__(self, pos, direction, speed=10, room=None, player=None):
         size = (2, 2)
         image = pygame.image.load("./images/laser_bullet.png").convert_alpha()
         collision_obj = collision_tools.CollisionPoint(pos, self)
@@ -304,12 +306,11 @@ class LaserBullet(BulletBase):
 
 
 class WiredLaserBullet(BulletBase):
-    def __init__(self, pos, direction, speed=3, room=None):
+    def __init__(self, pos, direction, speed=3, room=None, player=None):
         size = (2, 2)
         image = pygame.image.load("./images/laser_bullet.png").convert_alpha()
         collision_obj = collision_tools.CollisionPoint(pos, self)
-        BulletBase.__init__(self, pos, direction, speed, image, size, collision_obj, 500, room)
-        collision_obj.destroy()
+        BulletBase.__init__(self, pos, direction, speed, image, size, collision_obj, 500, room, player)
         self.collision_points = [pos]
         self.length = 100
 

@@ -80,6 +80,9 @@ class Panzer(object):
     def set_acceleration(self, value):
         self.acceleration = value
 
+    def set_bullet_type(self, value):
+        self.bullet_type = value
+
     def set_direction(self, value, rel=False):
         self.image = pygame.transform.scale(self.original_image, self.size)
         if rel:
@@ -110,7 +113,7 @@ class Panzer(object):
                     self.update_speed(-3 * sgn(self.speed))
 
     def update_speed(self, acceleration):
-        speed_limit = 5
+        speed_limit = 1
         if acceleration == 0:
             return
         if self.speed * sgn(acceleration) < speed_limit:
@@ -149,13 +152,12 @@ class Panzer(object):
         elif bullet_type == fire_load.LaserBullet:
             self.Gun.fire(self.room)
             self.Gun.destroy()
-        self.bullet_type = fire_load.BouncyFireLoad
+        # self.bullet_type = fire_load.BouncyFireLoad
 
     def get_top_left_corner(self):
         return self.position - (position_class.Position(self.image.get_rect().size)/2)
 
     def draw(self, screen):
-        #draw
         left_top_corner = self.get_top_left_corner()
         screen.blit(self.image, left_top_corner)
         # pygame.draw.circle(screen, (0, 0, 0), self.collision_obj.position.int_cordinates(), self.collision_obj.radius, 0)
