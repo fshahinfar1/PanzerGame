@@ -148,6 +148,9 @@ class KeyboardHandler(object):
         if key_name in self.connected_keys:
             return self.connected_keys[key_name].check_hold()
 
+    def all_keys_up(self):
+        for key in self.connected_keys.values():
+            key.set_key_up()
 
 class Mouse(object):
     """

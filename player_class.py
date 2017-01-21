@@ -64,3 +64,10 @@ def active_player():
         if not p.killed:
             c += 1
     return c
+
+
+def release_all_keys():
+    for player in player_list:
+        if player.controller_type() == 'keyboard':
+            player.controller.all_keys_up()
+

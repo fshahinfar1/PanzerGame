@@ -13,13 +13,12 @@ import collision_tools
 import timer_obj
 import my_pygame_tools as tools
 from random import randrange
-import sys
 cp = tools.Colors()
 
 
 class TestRoom(room_obj.Room):
     def __init__(self, clock, map):
-        room_obj.Room.__init__(self, 'Test', clock=clock)  # create room with name Test
+        room_obj.Room.__init__(self, 'Test', clock=clock, caption="Panzer Game")  # create room with name Test
         # walls/ collectable objects/ ...
         map_obj.load(map)
         # ready_players_tank
@@ -59,8 +58,7 @@ class TestRoom(room_obj.Room):
                 self.mouse.event_btn_released(event)
 
     def run_logic(self):
-        print(len(collision_tools.collidable_objects))
-        if player_class.active_player()< 2:
+        if player_class.active_player() < 2:
             self.timer.set_timer()
             if self.timer.is_time():
                 self.change_map()
@@ -130,6 +128,7 @@ class TestRoom(room_obj.Room):
     def change_map(self):
         print("map_changed")
         self.destroy()
+        player_class.release_all_keys()
         player_class.activate_all_players()
         self.__init__(self.clock, "maps/map01.txt")
 
