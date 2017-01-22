@@ -1,0 +1,22 @@
+player_num: {3}
+##
+#player_1:
+start
+control:  {"KeySetOne"}
+name: {"player1"}
+image: {"images/panzer.png"}
+end
+##
+#player_2:
+start
+control:  {"KeySetThree"}
+name: {"player2"}
+image: {"images/panzer2.png"}
+end
+##
+#player_3:
+start
+control:  {"JoystickSetOne"; 0}
+name: {"player3"}
+image: {"images/panzer.png"}
+end

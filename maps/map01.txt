@@ -1,52 +1,46 @@
-### farbod shahinfar
 ### PanzerGame
 ### map_name: map01
-### 22/10/95
+### 3/11/95
 #
 ### Room Size
-Size: 800, 500
+Size: 1024, 600
 #
 ## Objects:
 #
 ## border walls
-#     {(pos    ); dir;(size  )}
-Wall: {(0  ,0  ); 0  ;(800,14)}
-Wall: {(0  ,486); 0  ;(800,14)}
-Wall: {(-2 ,0  ); -90;(500,14)}
-Wall: {(784,0  ); -90;(500,14)}
+#     {(pos     ); dir;(size  )}
+Wall: {(2   ,0  ); 0  ;(1024,7)}
+Wall: {(2   ,750); 0  ;(1024,7)}
+Wall: {(-1  ,0  ); -90;(800 ,7)}
+Wall: {(1016,0  ); -90;(800 ,7)}
 #
 ## First Row Walls
 #
-Wall: {(148,100); -90;(54,14)}
-Wall: {(164,100); 0  ;(54,14)}
-Wall: {(218,100); 0  ;(54,14)}
+Wall: {(148,150); -90;(50, 7)}
+Wall: {(150,150); 0  ;(150,7)}
 # Gap Horizontal
-Wall: {(336,100); 0  ;(54,14)}
-Wall: {(390,100); 0  ;(54,14)}
+Wall: {(400,150); 0  ;(150,7)}
 # Gap Horizontal
-Wall: {(508,100); 0  ;(54,14)}
-Wall: {(562,100); 0  ;(54,14)}
-Wall: {(614,100); -90;(54,14)}
+Wall: {(650,150); 0  ;(150,7)}
+Wall: {(799,150); -90;(50, 7)}
 ## Second Row Walls
 # Gap Vertical
-Wall: {(148,218); -90;(54,14)}
+Wall: {(148,300); -90;(50,7)}
+Wall: {(800,300); -90;(50,7)}
 ## Third Row Walls
 # Gap Vertical
-Wall: {(148,336); -90;(54,14)}
-Wall: {(164,390); 0  ;(54,14)}
-Wall: {(218,390); 0  ;(54,14)}
+Wall: {(148,450); -90;(50, 7)}
+Wall: {(149,500); 0  ;(150,7)}
 # Gap Horizontal
-Wall: {(336,390); 0  ;(54,14)}
-Wall: {(390,390); 0  ;(54,14)}
-# Gap Horizontal
-# Gap Horizontal
-Wall: {(508,390); 0  ;(54,14)}
-Wall: {(562,390); 0  ;(54,14)}
-Wall: {(614,336); -90;(54,14)}
+Wall: {(400,500); 0  ;(150,7)}
+Wall: {(650,500); 0  ;(150,7)}
+Wall: {(799,457); -90;(50, 7)}
 #
 ## Collectable Objects
 Collectable-Laser: {(255, 50)}
 Collectable-TirKoloft: {(50, 255)}
+Collectable-Amoo: {(255,255)}
+Collectable-TirNazok: {(450,255)}
 #
 ## TankStratPoint
 Start_Point: {(60 ,60 ); (0  )}
