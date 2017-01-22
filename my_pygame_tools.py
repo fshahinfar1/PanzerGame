@@ -1,7 +1,3 @@
-# farbod shahinfar
-# MyPyGameTools
-# version 0.000beta
-# last update : 22/10/95
 import pygame
 from math import sin, cos, atan, degrees, radians
 

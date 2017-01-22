@@ -1,4 +1,3 @@
-# farbod shahinfar
 # 7/10/95
 # Panzer Game
 # menu list obj
@@ -50,8 +49,7 @@ class Menu:
                 w = max(pre_w, w)
                 pre_w = w
             else:
-                print("Type error")
-                raise
+                raise TypeError
         self.size = (w + 2 * space_left, h + 2 * space_top + (self.count_labels - 1) * space_between)
 
     def what_is_label_index(self, label):

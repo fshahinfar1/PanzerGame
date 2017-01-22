@@ -1,4 +1,3 @@
-# Farbod Shahinfar
 # 10/10/95
 # main menu room
 import pygame
@@ -6,6 +5,8 @@ import room_obj
 import menu_list_obj
 import label_obj
 import test_room
+import setting_reader
+import multi_room
 import key_map_sets
 import player_class
 from my_pygame_tools import Colors, Mouse
@@ -15,28 +16,13 @@ cp = Colors()
 
 class MainMenuRoom(room_obj.Room):
     def __init__(self, clock):
-        room_obj.Room.__init__(self, 'main_menu', clock=clock)  # Create a room object with name main_menu
+        room_obj.Room.__init__(self, 'main_menu', clock=clock, caption="Main Menu")  # Create a room object with name main_menu
         self.menu = menu_list_obj.Menu((100, 100))  # Create a menu object
         self.init_label()  # Add labels to menu
         self.mouse = Mouse()
-        self.init_player()
 
     def init_player(self):
-        # player1
-        key_set = key_map_sets.KeySetOne()
-        img = pygame.image.load("images/panzer.png").convert_alpha()
-        player_class.Player(key_set.keyboard, key_set.key_map, "Farbod", img)
-        # self.Players.append(player1)
-        # key_set = key_map_sets.KeySetThree()
-        # player_class.Player(key_set.keyboard, key_set.key_map, "player2")
-        # self.Players.append(player2)
-        # player2
-        key_set = key_map_sets.JoystickSetOne(0)
-        # panzer2 = panzer_obj.Panzer((60, 400), panzer_img, (54, 54), self.clock, self)
-        # fixme key_set.key_map is not usable here
-        img = pygame.image.load("images/panzer2.png").convert_alpha()
-        player_class.Player(key_set.joystick, key_set.key_map, "Farnad", img)
-        # self.Players.append(player2)
+        setting_reader.init_players("setting/setting.txt")
 
     def destroy(self):
         del self.menu
@@ -74,7 +60,13 @@ class MainMenuRoom(room_obj.Room):
             if index is not None:
                 print(index)
                 if index == 0:
+                    self.init_player()
                     room = test_room.TestRoom(self.clock, "maps/map01.txt")
+                    self.set_next_room(room)
+                    self.goto_next_room()
+                    return
+                elif index == 1:
+                    room = multi_room.MultiRoom(self.clock, "maps/map01.txt")
                     self.set_next_room(room)
                     self.goto_next_room()
                     return

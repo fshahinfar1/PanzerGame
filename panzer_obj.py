@@ -1,5 +1,4 @@
-# Farbod Shahinfar
-# 25/10/95
+# 3/11/95
 # panzer game
 # panzer object
 import pygame

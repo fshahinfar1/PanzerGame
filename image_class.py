@@ -1,4 +1,3 @@
-# Farbod Shahinfar
 # image_class
 # 29/10/95
 import pygame

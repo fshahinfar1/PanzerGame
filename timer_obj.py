@@ -1,4 +1,3 @@
-# farbod shahinfar
 # timer object
 # 13/10/95
 import time

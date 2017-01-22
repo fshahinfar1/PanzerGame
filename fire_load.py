@@ -1,6 +1,4 @@
-# Farbod Shahinfar
-# 25/10/95
-# bouncy fire load
+# 3/11/95
 import pygame
 import position_class
 import collision_tools

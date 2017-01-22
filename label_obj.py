@@ -1,4 +1,3 @@
-# Farbod Shahinfar
 # Panzer Game
 # label_obj
 # 7/10/95

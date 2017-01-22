@@ -1,4 +1,3 @@
-# Farbod Shahinfar
 # 25/10/95
 # collision tools
 import position_class

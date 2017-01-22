@@ -1,4 +1,3 @@
-# farbod shahinfar
 # Panzer Game
 # room object
 # 7/10/95
@@ -6,13 +5,14 @@ import pygame
 
 
 class Room:
-    def __init__(self, name, size=(800, 500), clock=None, caption="window", next_room=None):
+    def __init__(self, name, size=(1024, 800), clock=None, caption="window", next_room=None):
         self.Name = name  # Room name
         self.flag_end = False  # represents if room is end
         self.flag_GameOver = False  # Game End (all done quit)
         self.flag_pause = False
         self.screen_size = self.width, self.height = size
         self.screen = pygame.display.set_mode(self.screen_size)
+        # pygame.display.toggle_fullscreen()
         pygame.display.set_caption(caption)
         self.clock = clock
         self.next_room = next_room
@@ -45,18 +45,12 @@ class Room:
         return self.flag_end, self.flag_GameOver
     
     def process_events(self):
-        # for event in pygame.event.get():
         pass
     
     def run_logic(self):
         pass
     
     def draw_frame(self):
-        # self.screen.fill((255,255,255))
-        #
-        # Draw something
-        #
-        # pygame.display.flip()
         pass
 
     def get_next_room(self):

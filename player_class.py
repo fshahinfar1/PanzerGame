@@ -1,6 +1,5 @@
-# Farbod Shahinfar
 # Panzer Game
-# 22/10/95
+# 3/11/95
 # player class
 import label_obj
 import panzer_obj

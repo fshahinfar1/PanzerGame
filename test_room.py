@@ -1,5 +1,4 @@
-# Farbod Shahinfar
-# 25/10/95
+# 3/11/95
 # Test Room
 import pygame
 import room_obj
@@ -85,7 +84,6 @@ class TestRoom(room_obj.Room):
                 # fire
                 if self.check_hold(player.key_map['fire']):
                     player.get_panzer().key_space()
-
             elif player.controller_type() == "joystick":
                 # turn
                 hat_num = player.get_controller().get_hat(0)
@@ -103,7 +101,6 @@ class TestRoom(room_obj.Room):
                 # fire
                 if player.get_controller().get_button(2):
                     player.get_panzer().key_space()
-
         # mouse
         if self.mouse.is_btn_pressed(1):
             print('left_btn_pressed')
@@ -131,7 +128,6 @@ class TestRoom(room_obj.Room):
     def change_map(self):
         print("map_changed")
         self.destroy()
-        player_class.release_all_keys()
         player_class.activate_all_players()
         self.__init__(self.clock, "maps/map01.txt")
 

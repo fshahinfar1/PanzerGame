@@ -1,5 +1,4 @@
-# Farbod Shahinfar
-# 29/10/95
+# 3/11/95
 # map_obj
 import pygame
 import wall_obj

@@ -1,5 +1,4 @@
-# Farbod Shahinfar
-# 26/10/95
+# 3/11/95
 # Panzer Game
 import pygame
 import position_class

@@ -1,6 +1,3 @@
-# farbod shahinfar
-# test main
-
 import sys
 import pygame
 import test_room

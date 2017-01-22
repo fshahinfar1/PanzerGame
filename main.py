@@ -1,5 +1,3 @@
-# farbod shahinfar
-# battleShip game
 # 18/9/95
 # main
 import sys

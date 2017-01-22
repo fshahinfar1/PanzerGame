@@ -1,4 +1,3 @@
-# Farbod Shahinfar
 # 7/10/95
 # position class
 
