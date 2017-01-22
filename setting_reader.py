@@ -36,7 +36,7 @@ def init_players(add):
                 player_class.Player(control.joystick, control.key_map, name, img)
             else:
                 control = control_map[control]()
-                player_class.Player(control.keyboard, control.key_map, name, img)
+                player_class.Player(control.control, control.key_map, name, img)
 
 
 
