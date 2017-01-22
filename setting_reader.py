@@ -1,12 +1,16 @@
 import pygame
 import player_class
 from key_map_sets import *
-control_map = {"KeySetOne": KeySetOne, "KeySetTwo": KeySetTwo, "KeySetThree": KeySetThree, "JoystickSetOne": JoystickSetOne,}
+control_map = {"KeySetOne": KeySetOne, "KeySetTwo": KeySetTwo, "KeySetThree": KeySetThree,
+               "JoystickSetOne": JoystickSetOne,}
 
 
 def init_players(add):
-    infile = open("setting/setting.txt","r")
-    n = 0
+    infile = open(add, "r")
+    n = 0  # number of players
+    idx = -1  # joystick index
+    name = ""  # player name
+    img = ""  # player image
     for line in infile:
         if line[0] == '#':
             continue
@@ -32,12 +36,13 @@ def init_players(add):
         elif "end" in line:
             img = pygame.image.load(img).convert_alpha()
             if "Joystick" in control:
+                t = control
                 control = control_map[control](idx)
-                player_class.Player(control.joystick, control.key_map, name, img)
+                player_class.Player(t, control.joystick, control.key_map, name, img)
             else:
+                t = control
                 control = control_map[control]()
-                player_class.Player(control.control, control.key_map, name, img)
-
+                player_class.Player(t, control.control, control.key_map, name, img)
 
 
 def remove_title(string, title):
@@ -54,11 +59,11 @@ def find_semi_colon(string, index):
     count = -1
     last_comma = 1
     for i in range(len(string)):
-        if string[i] == ';' or string[i]=='}':
+        if string[i] == ';' or string[i] == '}':
             count += 1
             if count == index:
                 return last_comma, i
-            last_comma = i+1 # it is not simi colon's index. it is next character's index.
+            last_comma = i+1  # it is not simi colon's index. it is next character's index.
     # if not found
     return -1, -1
 
