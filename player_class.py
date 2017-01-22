@@ -11,11 +11,11 @@ player_list = []
 
 
 class Player(object):
-    def __init__(self, controller, key_map, name, img):
-        # if using joystick then it should be supplied if keyboard a keyboard handler should be given
-        self.name = name
-        self.controller = controller
-        self.key_map = key_map
+    def __init__(self, key_set, controller, key_map, name, img):
+        self.name = name  # player name
+        self.key_set = key_set  # which key set from <key_map_sets.py> has been chosen for the player
+        self.controller = controller  # controller controlling the player for key board it is just a str
+        self.key_map = key_map  # each action's defined key
         self.panzer_img = img
         self.panzer = None
         self.score = 0
@@ -27,7 +27,7 @@ class Player(object):
 
     def destroy(self):
         player_list.remove(self)
-        # self.panzer.destroy()
+        self.panzer.destroy()
 
     def get_panzer(self):
         return self.panzer
@@ -36,7 +36,10 @@ class Player(object):
         return self.controller
 
     def controller_type(self):
-        return self.controller
+        if "Joystick" in self.key_set:
+            return 'joystick'
+        else:
+            return 'keyboard'
 
     def add_score(self, value):
         self.score += value
@@ -63,8 +66,7 @@ def active_player():
     return c
 
 
-def release_all_keys():
-    for player in player_list:
-        if player.controller_type() == 'keyboard':
-            player.controller.all_keys_up()
-
+def get_player(name):
+    for p in player_list:
+        if p.name == name:
+            return p
