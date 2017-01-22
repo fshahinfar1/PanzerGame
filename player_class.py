@@ -36,10 +36,7 @@ class Player(object):
         return self.controller
 
     def controller_type(self):
-        if isinstance(self.controller, KeyboardHandler):
-            return "keyboard"
-        elif isinstance(self.controller, joystick.JoystickType):
-            return "joystick"
+        return self.controller
 
     def add_score(self, value):
         self.score += value

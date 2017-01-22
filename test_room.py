@@ -42,20 +42,23 @@ class TestRoom(room_obj.Room):
         wall_obj.clear()
 
     def process_events(self):
-        events = pygame.event.get()
-        for event in events:
+        for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.flag_GameOver = True
                 self.flag_end = True
-            elif event.type == pygame.KEYDOWN or event.type == pygame.KEYUP:
-                for player in player_class.player_list:
-                    if not player.killed:
-                        if player.controller_type() == "keyboard":
-                            player.get_controller().get_event(event)
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    self.quit_game()
+                    return
+                elif event.key == pygame.K_BACKSPACE:
+                    pygame.display.toggle_fullscreen()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 self.mouse.event_btn_pressed(event)
             elif event.type == pygame.MOUSEBUTTONUP:
                 self.mouse.event_btn_released(event)
+
+    def check_hold(self, key):
+        return pygame.key.get_pressed()[key]
 
     def run_logic(self):
         if player_class.active_player() < 2:
@@ -68,19 +71,19 @@ class TestRoom(room_obj.Room):
                 continue
             if player.controller_type() == "keyboard":
                 # turn
-                if player.key_map['rotate_right'].check_hold():
+                if self.check_hold(player.key_map['rotate_right']):
                     player.get_panzer().key_right()
-                elif player.key_map['rotate_left'].check_hold():
+                elif self.check_hold(player.key_map['rotate_left']):
                     player.get_panzer().key_left()
                 # forward / backward
-                if player.key_map['forward'].check_hold():
+                if self.check_hold(player.key_map['forward']):
                     player.get_panzer().key_up()
-                elif player.key_map['backward'].check_hold():
+                elif self.check_hold(player.key_map['backward']):
                     player.get_panzer().key_down()
                 else:
                     player.get_panzer().set_acceleration(0)
                 # fire
-                if player.key_map['fire'].check_hold():
+                if self.check_hold(player.key_map['fire']):
                     player.get_panzer().key_space()
 
             elif player.controller_type() == "joystick":
@@ -120,7 +123,7 @@ class TestRoom(room_obj.Room):
         [ani.draw(self.screen) for ani in image_class.object_list]
         k = 0
         for player in player_class.player_list:
-            pos = (50+k*120, 450)
+            pos = (50+k*120, 760)
             player.draw(self.screen, pos)
             k += 1
         pygame.display.update()  # update display

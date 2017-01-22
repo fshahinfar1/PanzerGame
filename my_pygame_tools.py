@@ -33,9 +33,10 @@ class Key(object):
     it represents a key on key board and
     give me some good functions to check their state
     """
-    def __init__(self, name):
-            self.key_name = name
-            self.key_hold = False
+    def __init__(self, key):
+        self.key_name = pygame.key.name(key)
+        # self.key_hold = False
+        self.key = key
 
     def __eq__(self, other):
         if isinstance(other, Key):
@@ -71,7 +72,8 @@ class Key(object):
         return False
     
     def check_hold(self):
-        return self.key_hold
+        # return self.key_hold
+        return pygame.key.get_pressed(self.key)
 
 
 class KeyboardHandler(object):
