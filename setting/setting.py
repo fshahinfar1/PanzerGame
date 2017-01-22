@@ -3,13 +3,6 @@ gi.require_version("Gtk","3.0")
 from gi.repository import Gtk
 
 
-class player:
-    def __init__(self):
-        self.control = ""
-        self.name = ""
-        self.img = ""
-
-
 class MyWindow(Gtk.Window):
     def __init__(self):
         Gtk.Window.__init__(self, title="Game-Setting")
@@ -21,8 +14,9 @@ class MyWindow(Gtk.Window):
         self.control_list.append(["KeySetTwo"])
         self.control_list.append(["KeySetThree"])
         self.control_list.append(["JoystickSetOne"])
-        self.players = []
+        self.player_number = 0
         self.rows = []
+        self.setting_file = open('setting.txt', 'w')
         stack = Gtk.Stack()
         stack.set_transition_type(Gtk.StackTransitionType.SLIDE_LEFT_RIGHT)
         stack.set_transition_duration(1000)
@@ -61,8 +55,9 @@ class MyWindow(Gtk.Window):
         self.spin_button.set_editable(False)
         self.rows[1].remove(button)
         del self.rows[1]
-        number_plyers = self.spin_button.get_value_as_int()
-        for i in range(1,number_plyers+1):
+        player_count = self.spin_button.get_value_as_int()
+        self.player_number = player_count
+        for i in range(1, player_count+1):
             row1 = Gtk.Box(spacing=6)
             self.rows.append(row1)
             s = "player-"+str(i)
@@ -74,7 +69,8 @@ class MyWindow(Gtk.Window):
             combo.pack_start(render_text, True)
             combo.add_attribute(render_text, "text", 0)
             row1.add(combo)
-
+            entry = Gtk.Entry()
+            row1.add(entry)
             self.vbox2.pack_start(row1, True, True, 0)
         button.disconnect_by_func(self.done_clicked)
         button.connect("clicked", self.player_done_clicked)
@@ -83,21 +79,39 @@ class MyWindow(Gtk.Window):
         row1.add(button)
         self.vbox2.pack_start(row1, True, True, 0)
         self.show_all()
-        print(number_plyers)
+        self.setting_file.write("player_num: {%d}\n" % self.player_number)
+        self.setting_file.write("##\n")
 
     def player_done_clicked(self, button):
-        print("gsadhasgjdsagjdg")
-        pass
+        for i in range(self.player_number):
+            self.setting_file.write("#player_%d:\n" % i)
+            self.setting_file.write("start\n")
+            combo = self.rows[i+1].get_children()[1]
+            tree_iter = combo.get_active_iter()
+            model = combo.get_model()
+            control = model[tree_iter][:2][0]
+            if "Joystick" in control:
+                self.setting_file.write("control: {\"%s\"; 0}\n" % control)
+            else:
+                self.setting_file.write("control: {\"%s\"}\n" % control)
+            entry = self.rows[i+1].get_children()[2]
+            name = entry.get_text()
+            self.setting_file.write("name: {\"%s\"}\n" % name)
+            img = "images/panzer2.png"
+            self.setting_file.write("image: {\"%s\"}\n" % img)
+            self.setting_file.write("end\n##\n")
+            print(name)
+        self.setting_file.close()
+        Gtk.main_quit()
 
     def combo_changed(self, combo):
         tree_iter = combo.get_active_iter()
         if tree_iter != None:
             model = combo.get_model()
             name = model[tree_iter][:2]
-            print("name = %s" % name)
+            print(name[0], type(name[0]))
 
 win = MyWindow()
 win.connect("delete_event", Gtk.main_quit)
 win.show_all()
 Gtk.main()
-        
