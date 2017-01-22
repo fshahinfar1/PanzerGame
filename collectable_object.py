@@ -85,5 +85,17 @@ class AmooObject(CollectableObject):
         other.set_bullet_type(fire_load.AmooBullet)
 
 
+class TirNazokObject(CollectableObject):
+    def __init__(self, pos):
+        img = pygame.image.load("images/laser.png").convert_alpha()
+        img = pygame.transform.scale(img, (20, 20))
+        CollectableObject.__init__(self, img, pos)
+
+    def collided_with(self, other):
+        self.destroy()
+        other.set_bullet_type(fire_load.TirNazok)
+        other.timer.set_duration(0.125)
+
+
 def clear():
     object_list.clear()

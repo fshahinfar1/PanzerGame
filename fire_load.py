@@ -107,7 +107,6 @@ class BulletBase(object):
 class BouncyFireLoad(BulletBase):
     def __init__(self, pos, direction, speed=5, room=None, player=None):
         img = pygame.image.load("./images/bouncy_fire_load.png").convert_alpha()
-        img.set_colorkey((255, 0, 255))
         size = (10, 10)
         collision_obj = collision_tools.CollisionCircle(pos, 5, self)
         BulletBase.__init__(self, pos, direction, speed, img, size, collision_obj, 10, room, player)
@@ -378,6 +377,7 @@ class AmooBullet(BulletBase):
         self.choose_timer = timer_obj.Timer(2)
         self.choose_timer.set_timer()
         self.flag_lock = False
+        self.player.get_panzer().set_bullet_type(BouncyFireLoad)
 
     def choice(self):
         tank_pos = []
@@ -424,6 +424,22 @@ class AmooBullet(BulletBase):
 
     def draw(self, screen):
         screen.blit(self.image, self.get_left_corner())
+
+
+class TirNazok(BulletBase):
+    def __init__(self, pos, direction, speed=4, room=None, player=None):
+        img = pygame.image.load("./images/bouncy_fire_load.png").convert_alpha()
+        size = (4, 4)
+        collision_obj = collision_tools.CollisionCircle(pos, 2, self)
+        BulletBase.__init__(self, pos, direction, speed, img, size, collision_obj, 5, room, player)
+        self.Ragbar_timer = timer_obj.Timer(2)
+        self.Ragbar_timer.set_timer()
+
+    def loop(self):
+        BulletBase.loop(self)
+        if self.Ragbar_timer.is_time():
+            self.player.get_panzer().timer.set_duration(1)
+            self.player.get_panzer().bullet_type = BouncyFireLoad
 
 
 def clear():

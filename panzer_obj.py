@@ -143,7 +143,7 @@ class Panzer(object):
         self.collision_obj.set_position(self.position)
 
     def fire(self, bullet_type):
-        if bullet_type in (fire_load.BouncyFireLoad, fire_load.TirKoloft, fire_load.AmooBullet):
+        if bullet_type in (fire_load.BouncyFireLoad, fire_load.TirKoloft, fire_load.AmooBullet, fire_load.TirNazok):
             bullet_type(self.calculate_directional_position(self.position, 20+28+abs(self.speed)), self.direction,\
                         room=self.room, player=self.player)
         elif bullet_type == fire_load.LaserBullet:
