@@ -7,14 +7,15 @@ import collision_tools
 import wall_obj
 import timer_obj
 import panzer_obj
+import player_class
 from math import degrees,radians, sin, cos, atan2
-from my_pygame_tools import reflect, calculate_directional_position, distance, draw_polyline
+from my_pygame_tools import reflect, calculate_directional_position, distance, draw_polyline, get_direction
 from random import randrange
 FireLoadObjectsList = []
 
 
 class BulletBase(object):
-    def __init__(self, pos, direction=0, speed=0, image=None, size=None, collision_object=None, t=5, room=None, player=None):
+    def __init__(self, pos, direction=0, speed=0, image=None, size=None, collision_object=None, t=10, room=None, player=None):
         self.size = size
         self.image_original = image
         # todo it is a good idea to create a class able to handle animation and use it instead
@@ -69,7 +70,7 @@ class BulletBase(object):
     def set_direction(self, value):
         self.direction = value
         self.image = pygame.transform.scale(self.image_original, self.size)
-        self.image = pygame.transform.rotozoom(self.image, self.direction, 1)
+        self.image = pygame.transform.rotozoom(self.image, -self.direction, 1)
 
     def loop(self):
         if self.timer.is_time():
@@ -104,12 +105,12 @@ class BulletBase(object):
 
 
 class BouncyFireLoad(BulletBase):
-    def __init__(self, pos, direction, speed=4, room=None, player=None):
+    def __init__(self, pos, direction, speed=5, room=None, player=None):
         img = pygame.image.load("./images/bouncy_fire_load.png").convert_alpha()
         img.set_colorkey((255, 0, 255))
         size = (10, 10)
         collision_obj = collision_tools.CollisionCircle(pos, 5, self)
-        BulletBase.__init__(self, pos, direction, speed, img, size, collision_obj, 5, room, player)
+        BulletBase.__init__(self, pos, direction, speed, img, size, collision_obj, 10, room, player)
 
 
 class TarKesh(BulletBase):
@@ -140,17 +141,17 @@ class TarKesh(BulletBase):
 
 
 class TirKoloft(BulletBase):
-    def __init__(self, pos, direction, speed=5, room=None, player=None):
+    def __init__(self, pos, direction, speed=4, room=None, player=None):
         img = pygame.image.load("./images/bouncy_fire_load.png").convert_alpha()
         size = (16, 16)
         collision_obj = collision_tools.CollisionCircle(pos, 8, self)
-        BulletBase.__init__(self, pos, direction, speed, img, size, collision_obj, 5, room, player)
+        BulletBase.__init__(self, pos, direction, speed, img, size, collision_obj, 8, room, player)
+        self.player.get_panzer().set_bullet_type(BouncyFireLoad)
 
     def destroy(self):
         for i in range(20):
             direction = randrange(0, 361)
             TarKesh(self.position, direction, player=self.player, room=self.room)
-        self.player.get_panzer().set_bullet_type(BouncyFireLoad)
         BulletBase.destroy(self)
 
 
@@ -218,6 +219,7 @@ class LaserGun(object):
     def fire(self, room):
         self.fire_state = 'Fire'
         LaserBullet(self.fire_position, self.fire_direction, room=room, player=self.panzer.player)
+        self.destroy()
 
     def loop(self):
         self.set_position(self.panzer.calculate_directional_position(self.panzer.position, 28 + abs(self.panzer.speed)),
@@ -238,7 +240,7 @@ class LaserBullet(BulletBase):
         size = (2, 2)
         image = pygame.image.load("./images/laser_bullet.png").convert_alpha()
         collision_obj = collision_tools.CollisionPoint(pos, self)
-        BulletBase.__init__(self, pos, direction, speed, image, size, collision_obj, 3, room, player)
+        BulletBase.__init__(self, pos, direction, speed, image, size, collision_obj, 6, room, player)
         self.collision_points = [pos]
         self.length = 100
 
@@ -362,6 +364,66 @@ class WiredLaserBullet(BulletBase):
         self.update_collision_points()
         screen.blit(self.image, self.get_left_corner())
         pygame.draw.aalines(screen, blue, False, self.collision_points + [self.position])
+
+
+class AmooBullet(BulletBase):
+
+    def __init__(self, pos, direction, speed=2, room=None, player=None):
+        size = (20, 20)
+        image = pygame.image.load("./images/Amoo.png").convert_alpha()
+        collision_obj = collision_tools.CollisionPoint(pos, self)
+        BulletBase.__init__(self, pos, direction, speed, image, size, collision_obj, 30, room, player)
+        self.chosen_tank = None
+        self.chosen_point = None
+        self.choose_timer = timer_obj.Timer(2)
+        self.choose_timer.set_timer()
+        self.flag_lock = False
+
+    def choice(self):
+        tank_pos = []
+        for player in player_class.player_list:
+            tank_pos += [player.get_panzer().get_position()]
+        a = distance(self.position, tank_pos[0])
+        index = 0
+        for i in range(1, len(tank_pos)):
+            b = distance(self.position, tank_pos[i])  # tank= tank_pos
+            if b < a:
+                a = b
+                index = i
+        return player_class.player_list[index].get_panzer()
+
+    def loop(self):
+        if self.timer.is_time():
+            self.destroy()
+            return
+        if self.update_position():
+            return
+        collide_object = collision_tools.is_colliding(self.collision_obj, self.position, self.collision_obj)
+        if collide_object is not None:
+            if isinstance(collide_object.get_parent(), wall_obj.Wall):
+                self.position = self.collision_obj.move_to_edge(collide_object, self.direction)
+                self.set_direction(reflect(self.direction, collide_object.get_colliding_surface_angle(self.collision_obj)))
+                self.flag_lock = False
+                self.choose_timer.set_duration(0.5)
+                self.choose_timer.set_timer()
+
+            elif isinstance(collide_object.get_parent(), panzer_obj.Panzer):
+                tank = collide_object.get_parent()
+                if tank is not self.player.get_panzer():
+                    self.player.add_score(1)
+                tank.destroy()
+                self.destroy()
+                return
+            elif collide_object.is_solid():
+                self.destroy()
+        if self.choose_timer.is_time():
+            self.chosen_tank = self.choice()
+            self.flag_lock = True
+        if self.flag_lock:
+            self.set_direction(get_direction(self.position, self.chosen_tank.get_position()))
+
+    def draw(self, screen):
+        screen.blit(self.image, self.get_left_corner())
 
 
 def clear():

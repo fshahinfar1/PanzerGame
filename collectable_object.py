@@ -74,5 +74,16 @@ class LaserObject(CollectableObject):
         other.Gun = fire_load.LaserGun(other.calculate_directional_position(other.position, 28 + abs(other.speed)), other.direction, other)
 
 
+class AmooObject(CollectableObject):
+    def __init__(self, pos):
+        img = pygame.image.load("images/laser.png").convert_alpha()
+        img = pygame.transform.scale(img, (20, 20))
+        CollectableObject.__init__(self, img, pos)
+
+    def collided_with(self, other):
+        self.destroy()
+        other.set_bullet_type(fire_load.AmooBullet)
+
+
 def clear():
     object_list.clear()

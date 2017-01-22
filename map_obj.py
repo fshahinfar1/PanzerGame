@@ -34,6 +34,10 @@ def load(file_add):
                 data_string = remove_title(line, 'Collectable-TirKoloft').strip()
                 collectable_pos = brace_data(data_string, 0)
                 collectable_object.TirKoloftObject(collectable_pos)
+            if 'Amoo' in line:
+                data_string = remove_title(line, 'Collectable-Amoo').strip()
+                collectable_pos = brace_data(data_string, 0)
+                collectable_object.AmooObject(collectable_pos)
     map_file.close()
 
 
