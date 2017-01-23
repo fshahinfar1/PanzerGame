@@ -25,17 +25,17 @@ s.setblocking(0)
 
 
 class MultiRoom(room_obj.Room):
-    def __init__(self, clock, map):
-        room_obj.Room.__init__(self, 'Test', clock=clock, caption="Panzer Game")  # create room with name Test
+    def __init__(self, screen, clock, map):
+        room_obj.Room.__init__(self, screen, 'Test', clock=clock, caption="Panzer Game")  # create room with name Test
         # walls/ collectable objects/ ...
         map_obj.load(map)
         # Create self player
-        # key_set = key_map_sets.KeySetTwo()
-        # img = pygame.image.load('images/panzer.png').convert_alpha()
-        # p = player_class.Player('KeySetTwo', key_set.control, key_set.key_map, "p2", img)
-        key_set = key_map_sets.KeySetOne()
-        img = pygame.image.load('images/panzer.png').convert_alpha()
-        p = player_class.Player('KeySetOne', key_set.control, key_set.key_map, "p1", img)
+        key_set = key_map_sets.KeySetTwo()
+        img = pygame.image.load('images/panzer2.png').convert_alpha()
+        p = player_class.Player('KeySetTwo', key_set.control, key_set.key_map, "p2", img)
+        # key_set = key_map_sets.KeySetOne()
+        # img = pygame.image.load('images/panzer1.png').convert_alpha()
+        # p = player_class.Player('KeySetOne', key_set.control, key_set.key_map, "p1", img)
         tank_start_point = map_obj.get_start_points(map)
         idx = randrange(len(tank_start_point))
         pos = tank_start_point[idx][0]
@@ -84,14 +84,16 @@ class MultiRoom(room_obj.Room):
                 self.flag_GameOver = True
                 self.flag_end = True
             elif event.type == pygame.KEYDOWN:
-                s.sendto(str(pygame.key.get_pressed()).encode(), server)
+                if event.key in player_class.player_list[0].key_map.values():
+                    s.sendto(str(pygame.key.get_pressed()).encode(), server)
                 if event.key == pygame.K_ESCAPE:
                     self.quit_game()
                     return
                 elif event.key == pygame.K_BACKSPACE:
                     pygame.display.toggle_fullscreen()
             elif event.type == pygame.KEYUP:
-                s.sendto(str(pygame.key.get_pressed()).encode(), server)
+                if event.key in player_class.player_list[0].key_map.values():
+                    s.sendto(str(pygame.key.get_pressed()).encode(), server)
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 self.mouse.event_btn_pressed(event)
             elif event.type == pygame.MOUSEBUTTONUP:
@@ -117,23 +119,13 @@ class MultiRoom(room_obj.Room):
                     img = pygame.image.load('images/panzer.png').convert_alpha()
                     a = player_class.Player(data[-1][3], key_set.control, key_set.key_map, data[-1][0], img)
                     a.ready_panzer(data[-1][1], data[-1][2], self.clock, self)
+            elif 'restart' in self.message:
+                self.__init__(self.clock, "maps/map01.txt")
+                return False
             else:
                 data = eval(self.message)
-                if 'keydown' in data:
-                    player_name = data[1]
-                    # if player_name != player_class.player_list[0].name:
-                    hold_key = int(data[2])
-                    self.keys[hold_key] = True
-                    p = player_class.get_player(player_name)
-                if 'keyup' in data:
-                    player_name = data[1]
-                    # if player_name != player_class.player_list[0].name:
-                    hold_key = int(data[2])
-                    self.keys[hold_key] = True
-                    p = player_class.get_player(player_name)
-                else:
-                    # print(data)
-                    self.keys = data
+                self.keys = data
+                return True
         except:
             pass
 
@@ -225,6 +217,8 @@ class MultiRoom(room_obj.Room):
 
     def change_map(self):
         print("map_changed")
-        self.destroy()
-        player_class.activate_all_players()
-        self.__init__(self.clock, "maps/map01.txt")
+        s.sendto('finish'.encode(), server)
+        player_class.player_list.clear()
+        flag_restart = True
+        while flag_restart:
+            flag_restart = self.recv_anything()
