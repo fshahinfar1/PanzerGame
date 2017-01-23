@@ -34,6 +34,7 @@ class Panzer(object):
         self.Gun = None
         self.player = player
         self.set_direction(direction)
+        self.Ragbar_timer = timer_obj.Timer(2)
 
     def destroy(self):
         image_class.Explosion(self.get_top_left_corner())
@@ -188,3 +189,6 @@ class Panzer(object):
         self.add_friction()
         if self.timer.is_time():
             self.flag_ready_fire = True
+        if self.Ragbar_timer.is_time():
+            self.player.get_panzer().timer.set_duration(1)
+            self.player.get_panzer().bullet_type = fire_load.BouncyFireLoad

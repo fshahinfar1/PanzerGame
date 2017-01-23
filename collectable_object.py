@@ -94,6 +94,7 @@ class TirNazokObject(CollectableObject):
         self.destroy()
         other.set_bullet_type(fire_load.TirNazok)
         other.timer.set_duration(0.125)
+        other.Ragbar_timer.set_timer()
 
 
 def clear():

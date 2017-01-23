@@ -18,7 +18,7 @@ class BulletBase(object):
         self.image_original = image
         # todo it is a good idea to create a class able to handle animation and use it instead
         self.image = pygame.transform.scale(self.image_original, self.size)
-        self.image = pygame.transform.rotozoom(self.image, direction, 1)
+        self.image = pygame.transform.rotozoom(self.image, -direction, 1)
         self.position = position_class.Position(pos)  # current position of obj
         self.speed = speed
         self.direction = direction
@@ -370,7 +370,7 @@ class AmooBullet(BulletBase):
         image = pygame.image.load("./images/Amoo.png").convert_alpha()
         collision_obj = collision_tools.CollisionPoint(pos, self)
         BulletBase.__init__(self, pos, direction, speed, image, size, collision_obj, 30, room, player)
-        self.chosen_tank = None
+        self.chosen_player = None
         self.chosen_point = None
         self.choose_timer = timer_obj.Timer(2)
         self.choose_timer.set_timer()
@@ -380,7 +380,8 @@ class AmooBullet(BulletBase):
     def choice(self):
         tank_pos = []
         for player in player_class.player_list:
-            tank_pos += [player.get_panzer().get_position()]
+            if not player.killed:
+                tank_pos += [player.get_panzer().get_position()]
         a = distance(self.position, tank_pos[0])
         index = 0
         for i in range(1, len(tank_pos)):
@@ -388,7 +389,7 @@ class AmooBullet(BulletBase):
             if b < a:
                 a = b
                 index = i
-        return player_class.player_list[index].get_panzer()
+        return player_class.player_list[index]
 
     def loop(self):
         if self.timer.is_time():
@@ -415,10 +416,15 @@ class AmooBullet(BulletBase):
             elif collide_object.is_solid():
                 self.destroy()
         if self.choose_timer.is_time():
-            self.chosen_tank = self.choice()
+            self.chosen_player = self.choice()
             self.flag_lock = True
         if self.flag_lock:
-            self.set_direction(get_direction(self.position, self.chosen_tank.get_position()))
+            if not self.chosen_player.killed:
+                self.set_direction(get_direction(self.position, self.chosen_player.get_panzer().get_position()))
+            else:
+                self.chosen_player = None
+                self.flag_lock = False
+                self.choose_timer.set_timer()
 
     def draw(self, screen):
         screen.blit(self.image, self.get_left_corner())
@@ -430,14 +436,9 @@ class TirNazok(BulletBase):
         size = (4, 4)
         collision_obj = collision_tools.CollisionCircle(pos, 2, self)
         BulletBase.__init__(self, pos, direction, speed, img, size, collision_obj, 5, room, player)
-        self.Ragbar_timer = timer_obj.Timer(2)
-        self.Ragbar_timer.set_timer()
 
     def loop(self):
         BulletBase.loop(self)
-        if self.Ragbar_timer.is_time():
-            self.player.get_panzer().timer.set_duration(1)
-            self.player.get_panzer().bullet_type = BouncyFireLoad
 
 
 def clear():
