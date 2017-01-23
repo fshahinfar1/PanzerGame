@@ -30,12 +30,12 @@ class MultiRoom(room_obj.Room):
         # walls/ collectable objects/ ...
         map_obj.load(map)
         # Create self player
-        key_set = key_map_sets.KeySetTwo()
-        img = pygame.image.load('images/panzer.png').convert_alpha()
-        p = player_class.Player('KeySetTwo', key_set.control, key_set.key_map, "p2", img)
-        # key_set = key_map_sets.KeySetOne()
+        # key_set = key_map_sets.KeySetTwo()
         # img = pygame.image.load('images/panzer.png').convert_alpha()
-        # p = player_class.Player('KeySetOne', key_set.control, key_set.key_map, "p1", img)
+        # p = player_class.Player('KeySetTwo', key_set.control, key_set.key_map, "p2", img)
+        key_set = key_map_sets.KeySetOne()
+        img = pygame.image.load('images/panzer.png').convert_alpha()
+        p = player_class.Player('KeySetOne', key_set.control, key_set.key_map, "p1", img)
         tank_start_point = map_obj.get_start_points(map)
         idx = randrange(len(tank_start_point))
         pos = tank_start_point[idx][0]
@@ -97,7 +97,11 @@ class MultiRoom(room_obj.Room):
             elif event.type == pygame.MOUSEBUTTONUP:
                 self.mouse.event_btn_released(event)
 
-    def check_hold(self, key):
+    def check_hold_self(self, key):
+        # self.keys[key]
+        return pygame.key.get_pressed()[key]
+    
+    def check_hold_other(self, key):
         # pygame.key.get_pressed()[key] or
         return self.keys[key]
 
@@ -135,31 +139,46 @@ class MultiRoom(room_obj.Room):
 
     def run_logic(self):
         self.recv_anything()
-        if player_class.active_player() < 1:
+        if len(player_class.player_list)>1 and player_class.active_player() < 2:
             self.timer.set_timer()
             if self.timer.is_time():
                 self.change_map()
                 return
-        for player in player_class.player_list:
+        player = player_class.player_list[0]
+        if player.controller_type() == "keyboard":
+            # turn
+            if self.check_hold_self(player.key_map['rotate_right']):
+                player.get_panzer().key_right()
+            elif self.check_hold_self(player.key_map['rotate_left']):
+                player.get_panzer().key_left()
+            # forward / backward
+            if self.check_hold_self(player.key_map['forward']):
+                player.get_panzer().key_up()
+            elif self.check_hold_self(player.key_map['backward']):
+                player.get_panzer().key_down()
+            else:
+                player.get_panzer().set_acceleration(0)
+            # fire
+            if self.check_hold_self(player.key_map['fire']):
+                player.get_panzer().key_space()
+        for player in player_class.player_list[1:]:
             if player.killed:
                 continue
             if player.controller_type() == "keyboard":
                 # turn
-                if self.check_hold(player.key_map['rotate_right']):
+                if self.check_hold_other(player.key_map['rotate_right']):
                     player.get_panzer().key_right()
-                    k = str(player.key_map['rotate_right'])
-                    s.sendto(('(' + "'keydown'," + "'" + player.name + "'," +k+ ")").encode(), server)
-                elif self.check_hold(player.key_map['rotate_left']):
+                elif self.check_hold_other(player.key_map['rotate_left']):
                     player.get_panzer().key_left()
                 # forward / backward
-                if self.check_hold(player.key_map['forward']):
+                if self.check_hold_other(player.key_map['forward']):
                     player.get_panzer().key_up()
-                elif self.check_hold(player.key_map['backward']):
+                elif self.check_hold_other(player.key_map['backward']):
                     player.get_panzer().key_down()
                 else:
                     player.get_panzer().set_acceleration(0)
                 # fire
-                if self.check_hold(player.key_map['fire']):
+                if self.check_hold_other(player.key_map['fire']):
                     player.get_panzer().key_space()
 
             elif player.controller_type() == "joystick":
@@ -209,4 +228,3 @@ class MultiRoom(room_obj.Room):
         self.destroy()
         player_class.activate_all_players()
         self.__init__(self.clock, "maps/map01.txt")
-
