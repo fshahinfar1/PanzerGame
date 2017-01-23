@@ -64,7 +64,7 @@ class MyWindow(Gtk.Window):
             label = Gtk.Label(label=s)
             row1.add(label)
             combo = Gtk.ComboBox.new_with_model(self.control_list)
-            combo.connect("changed", self.combo_changed)
+            combo.connect("changed", self.combo_changed, i)
             render_text = Gtk.CellRendererText()
             combo.pack_start(render_text, True)
             combo.add_attribute(render_text, "text", 0)
@@ -91,7 +91,9 @@ class MyWindow(Gtk.Window):
             model = combo.get_model()
             control = model[tree_iter][:2][0]
             if "Joystick" in control:
-                self.setting_file.write("control: {\"%s\"; 0}\n" % control)
+                idx = self.rows[i+1].get_children()[3].get_text()
+                print(idx)
+                self.setting_file.write("control: {\"%s\"; %s}\n" % (control, idx))
             else:
                 self.setting_file.write("control: {\"%s\"}\n" % control)
             entry = self.rows[i+1].get_children()[2]
@@ -100,16 +102,24 @@ class MyWindow(Gtk.Window):
             img = "images/panzer2.png"
             self.setting_file.write("image: {\"%s\"}\n" % img)
             self.setting_file.write("end\n##\n")
-            print(name)
         self.setting_file.close()
         Gtk.main_quit()
 
-    def combo_changed(self, combo):
+    def combo_changed(self, combo, row):
         tree_iter = combo.get_active_iter()
         if tree_iter != None:
             model = combo.get_model()
-            name = model[tree_iter][:2]
-            print(name[0], type(name[0]))
+            name = model[tree_iter][:2][0]
+            row1 = self.rows[row]
+            if "Joystick" in name:
+                entry = Gtk.Entry()
+                row1.add(entry)
+                self.show_all()
+            else:
+                children = row1.get_children()
+                if len(children) > 3:
+                    row1.remove(children[3])
+            
 
 win = MyWindow()
 win.connect("delete_event", Gtk.main_quit)
