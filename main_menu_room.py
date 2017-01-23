@@ -4,18 +4,19 @@ import pygame
 import room_obj
 import menu_list_obj
 import label_obj
-import test_room
 import setting_reader
-import multi_room
 import os
+from test_room import TestRoom
+from multi_room import MultiRoom
 from my_pygame_tools import Colors, Mouse
+from random import randrange
 pygame.init()
 cp = Colors()
 
 
 class MainMenuRoom(room_obj.Room):
-    def __init__(self, clock):
-        room_obj.Room.__init__(self, 'main_menu', clock=clock, caption="Main Menu")  # Create a room object with name main_menu
+    def __init__(self, screen, clock):
+        room_obj.Room.__init__(self, screen, 'main_menu', clock=clock, caption="Main Menu")  # Create a room object with name main_menu
         self.menu = menu_list_obj.Menu((100, 100))  # Create a menu object
         self.init_label()  # Add labels to menu
         self.mouse = Mouse()
@@ -59,12 +60,14 @@ class MainMenuRoom(room_obj.Room):
                 print(index)
                 if index == 0:
                     self.init_player()
-                    room = test_room.TestRoom(self.clock, "maps/map01.txt")
+                    i = randrange(1, 4)
+                    room = TestRoom(self.screen, self.clock, "maps/map{0}.txt".format(i))
+                    # room = TestRoom(self.screen, self.clock, "maps/map1.txt")
                     self.set_next_room(room)
                     self.goto_next_room()
                     return
                 elif index == 1:
-                    room = multi_room.MultiRoom(self.clock, "maps/map01.txt")
+                    room = MultiRoom(self.screen, self.clock, "maps/map1.txt")
                     self.set_next_room(room)
                     self.goto_next_room()
                     return

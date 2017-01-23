@@ -2,6 +2,8 @@
 # main
 import sys
 import pygame
+screen = pygame.display.set_mode((1024, 800))
+# pygame.display.toggle_fullscreen()
 import main_menu_room
 pygame.init()
 
@@ -21,17 +23,16 @@ def main(game, game_state):
     game_state = ( flag_end, flag_GameOver )
     """
     while not (game_state[0] or game_state[1]):
-        if game.flag_pause:
-            continue
-        game.draw_frame()
         game.process_events()
-        game.run_logic()
-        game_state = game.is_end()
-        game.clock_tick()
+        if not game.flag_pause:
+            game.draw_frame()
+            game.run_logic()
+            game_state = game.is_end()
+            game.clock_tick()
     return game_state
 
 clock = pygame.time.Clock()
-room = main_menu_room.MainMenuRoom(clock)
+room = main_menu_room.MainMenuRoom(screen, clock)
 states = room.is_end()
 states = main(room, states)  # Start the game
 

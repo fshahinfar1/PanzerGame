@@ -16,8 +16,8 @@ cp = tools.Colors()
 
 
 class TestRoom(room_obj.Room):
-    def __init__(self, clock, map):
-        room_obj.Room.__init__(self, 'Test', clock=clock, caption="Panzer Game")  # create room with name Test
+    def __init__(self, screen, clock, map):
+        room_obj.Room.__init__(self, screen, 'Test', clock=clock, caption="Panzer Game")  # create room with name Test
         # walls/ collectable objects/ ...
         map_obj.load(map)
         # ready_players_tank
@@ -51,6 +51,8 @@ class TestRoom(room_obj.Room):
                     return
                 elif event.key == pygame.K_BACKSPACE:
                     pygame.display.toggle_fullscreen()
+                elif event.key == pygame.K_p:
+                    self.flag_pause = not self.flag_pause
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 self.mouse.event_btn_pressed(event)
             elif event.type == pygame.MOUSEBUTTONUP:
@@ -129,5 +131,6 @@ class TestRoom(room_obj.Room):
         print("map_changed")
         self.destroy()
         player_class.activate_all_players()
-        self.__init__(self.clock, "maps/map01.txt")
+        i = randrange(1,5)
+        self.__init__(self.screen, self.clock, "maps/map{0}.txt".format(i))
 
