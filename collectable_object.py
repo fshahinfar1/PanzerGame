@@ -51,8 +51,8 @@ class CollectableObject(object):
 
 class TirKoloftObject(CollectableObject):
     def __init__(self, pos):
-        img = pygame.image.load("images/laser.png").convert_alpha()
-        img = pygame.transform.scale(img, (16, 16))
+        img = pygame.image.load("images/box.png").convert_alpha()
+        img = pygame.transform.scale(img, (20, 20))
         CollectableObject.__init__(self, img, pos)
 
     def collided_with(self, other):
@@ -63,8 +63,8 @@ class TirKoloftObject(CollectableObject):
 class LaserObject(CollectableObject):
 
     def __init__(self, pos):
-        img = pygame.image.load("images/laser.png").convert_alpha()
-        img = pygame.transform.scale(img, (16, 16))
+        img = pygame.image.load("images/box.png").convert_alpha()
+        img = pygame.transform.scale(img, (20, 20))
         CollectableObject.__init__(self, img, pos)
 
     def collided_with(self, other):
@@ -75,7 +75,7 @@ class LaserObject(CollectableObject):
 
 class AmooObject(CollectableObject):
     def __init__(self, pos):
-        img = pygame.image.load("images/laser.png").convert_alpha()
+        img = pygame.image.load("images/box.png").convert_alpha()
         img = pygame.transform.scale(img, (20, 20))
         CollectableObject.__init__(self, img, pos)
 
@@ -86,7 +86,7 @@ class AmooObject(CollectableObject):
 
 class TirNazokObject(CollectableObject):
     def __init__(self, pos):
-        img = pygame.image.load("images/laser.png").convert_alpha()
+        img = pygame.image.load("images/box.png").convert_alpha()
         img = pygame.transform.scale(img, (20, 20))
         CollectableObject.__init__(self, img, pos)
 
