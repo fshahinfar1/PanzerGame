@@ -7,8 +7,7 @@ import label_obj
 import test_room
 import setting_reader
 import multi_room
-import key_map_sets
-import player_class
+import os
 from my_pygame_tools import Colors, Mouse
 pygame.init()
 cp = Colors()
@@ -33,10 +32,9 @@ class MainMenuRoom(room_obj.Room):
         pos = (0, 0)
         l1 = label_obj.Label("Single Player", pos, cp.BLACK, click_able=True)
         l2 = label_obj.Label("Multi Player", pos, cp.BLACK, click_able=True)
-        l3 = label_obj.Label("Play Online", pos, cp.BLACK, click_able=True)
-        l4 = label_obj.Label("Setting", pos, cp.BLACK, click_able=True)
-        l5 = label_obj.Label("Quit", pos, cp.BLACK, click_able=True)
-        self.menu.add_label(l1, l2, l3, l4, l5)
+        l3 = label_obj.Label("Setting", pos, cp.BLACK, click_able=True)
+        l4 = label_obj.Label("Quit", pos, cp.BLACK, click_able=True)
+        self.menu.add_label(l1, l2, l3, l4)
 
     # main loop functions
 
@@ -70,7 +68,9 @@ class MainMenuRoom(room_obj.Room):
                     self.set_next_room(room)
                     self.goto_next_room()
                     return
-                elif index == 4:
+                elif index == 2:
+                    os.system("python3 setting/setting.py")
+                elif index == 3:
                     self.quit_game()
 
     def draw_frame(self):
