@@ -5,13 +5,14 @@ import pygame
 
 
 class Room:
-    def __init__(self, name, size=(1024, 800), clock=None, caption="window", next_room=None):
+    def __init__(self, screen, name, size=(1024, 800), clock=None, caption="window", next_room=None):
         self.Name = name  # Room name
         self.flag_end = False  # represents if room is end
         self.flag_GameOver = False  # Game End (all done quit)
         self.flag_pause = False
         self.screen_size = self.width, self.height = size
-        self.screen = pygame.display.set_mode(self.screen_size)
+        # self.screen = pygame.display.set_mode(self.screen_size)
+        self.screen = screen
         # pygame.display.toggle_fullscreen()
         pygame.display.set_caption(caption)
         self.clock = clock
@@ -22,7 +23,7 @@ class Room:
 
     def destroy(self):
         # del self.clock
-        del self.screen
+        # del self.screen
         del self.screen_size
         del self.flag_end
         del self.Name
