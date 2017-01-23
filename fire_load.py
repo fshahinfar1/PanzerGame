@@ -10,9 +10,15 @@ from math import degrees,radians, sin, cos, atan2
 from my_pygame_tools import reflect, calculate_directional_position, distance, draw_polyline, get_direction
 from random import randrange
 FireLoadObjectsList = []
+img_bouncy = pygame.image.load("./images/bouncy_fire_load.png").convert_alpha()
+img_tarkesh = pygame.image.load("./images/TarKesh.png").convert_alpha()
+img_tirkoloft = pygame.image.load("./images/bouncy_fire_load.png").convert_alpha()
+img_laser = pygame.image.load("./images/laser_bullet.png").convert_alpha()
+img_Amoo = pygame.image.load("./images/Amoo.png").convert_alpha()
 
 
 class BulletBase(object):
+
     def __init__(self, pos, direction=0, speed=0, image=None, size=None, collision_object=None, t=10, room=None, player=None):
         self.size = size
         self.image_original = image
@@ -104,18 +110,17 @@ class BulletBase(object):
 
 class BouncyFireLoad(BulletBase):
     def __init__(self, pos, direction, speed=5, room=None, player=None):
-        img = pygame.image.load("./images/bouncy_fire_load.png").convert_alpha()
+
         size = (10, 10)
         collision_obj = collision_tools.CollisionCircle(pos, 5, self)
-        BulletBase.__init__(self, pos, direction, speed, img, size, collision_obj, 10, room, player)
+        BulletBase.__init__(self, pos, direction, speed, img_bouncy, size, collision_obj, 10, room, player)
 
 
 class TarKesh(BulletBase):
     def __init__(self, pos, direction, speed=6, room=None, player=None):
-        img = pygame.image.load("./images/TarKesh.png").convert_alpha()
         size = (8, 8)
         collision_obj = collision_tools.CollisionCircle(pos, 4, self)
-        BulletBase.__init__(self, pos, direction, speed, img, size, collision_obj, 2, room, player)
+        BulletBase.__init__(self, pos, direction, speed, img_tarkesh, size, collision_obj, 2, room, player)
 
     def loop(self):
         if self.timer.is_time():
@@ -139,10 +144,10 @@ class TarKesh(BulletBase):
 
 class TirKoloft(BulletBase):
     def __init__(self, pos, direction, speed=4, room=None, player=None):
-        img = pygame.image.load("./images/bouncy_fire_load.png").convert_alpha()
+
         size = (16, 16)
         collision_obj = collision_tools.CollisionCircle(pos, 8, self)
-        BulletBase.__init__(self, pos, direction, speed, img, size, collision_obj, 8, room, player)
+        BulletBase.__init__(self, pos, direction, speed, img_tirkoloft, size, collision_obj, 8, room, player)
         self.player.get_panzer().set_bullet_type(BouncyFireLoad)
 
     def destroy(self):
@@ -235,9 +240,8 @@ class LaserGun(object):
 class LaserBullet(BulletBase):
     def __init__(self, pos, direction, speed=10, room=None, player=None):
         size = (2, 2)
-        image = pygame.image.load("./images/laser_bullet.png").convert_alpha()
         collision_obj = collision_tools.CollisionPoint(pos, self)
-        BulletBase.__init__(self, pos, direction, speed, image, size, collision_obj, 6, room, player)
+        BulletBase.__init__(self, pos, direction, speed, img_laser, size, collision_obj, 6, room, player)
         self.collision_points = [pos]
         self.length = 100
 
@@ -367,9 +371,8 @@ class AmooBullet(BulletBase):
 
     def __init__(self, pos, direction, speed=2, room=None, player=None):
         size = (20, 20)
-        image = pygame.image.load("./images/Amoo.png").convert_alpha()
         collision_obj = collision_tools.CollisionPoint(pos, self)
-        BulletBase.__init__(self, pos, direction, speed, image, size, collision_obj, 30, room, player)
+        BulletBase.__init__(self, pos, direction, speed, img_Amoo, size, collision_obj, 30, room, player)
         self.chosen_player = None
         self.chosen_point = None
         self.choose_timer = timer_obj.Timer(2)
@@ -382,7 +385,8 @@ class AmooBullet(BulletBase):
         for player in player_class.player_list:
             if not player.killed:
                 tank_pos += [player.get_panzer().get_position()]
-        a = distance(self.position, tank_pos[0])
+        if len(tank_pos)>0:
+            a = distance(self.position, tank_pos[0])
         index = 0
         for i in range(1, len(tank_pos)):
             b = distance(self.position, tank_pos[i])  # tank= tank_pos
@@ -403,7 +407,7 @@ class AmooBullet(BulletBase):
                 self.position = self.collision_obj.move_to_edge(collide_object, self.direction)
                 self.set_direction(reflect(self.direction, collide_object.get_colliding_surface_angle(self.collision_obj)))
                 self.flag_lock = False
-                self.choose_timer.set_duration(0.5)
+                self.choose_timer.set_duration(1)
                 self.choose_timer.set_timer()
 
             elif isinstance(collide_object.get_parent(), panzer_obj.Panzer):
@@ -432,10 +436,9 @@ class AmooBullet(BulletBase):
 
 class TirNazok(BulletBase):
     def __init__(self, pos, direction, speed=4, room=None, player=None):
-        img = pygame.image.load("./images/bouncy_fire_load.png").convert_alpha()
         size = (4, 4)
         collision_obj = collision_tools.CollisionCircle(pos, 2, self)
-        BulletBase.__init__(self, pos, direction, speed, img, size, collision_obj, 5, room, player)
+        BulletBase.__init__(self, pos, direction, speed, img_bouncy, size, collision_obj, 5, room, player)
 
     def loop(self):
         BulletBase.loop(self)
