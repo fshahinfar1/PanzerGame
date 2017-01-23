@@ -16,7 +16,7 @@ class MyWindow(Gtk.Window):
         self.control_list.append(["JoystickSetOne"])
         self.player_number = 0
         self.rows = []
-        self.setting_file = open('setting.txt', 'w')
+        self.setting_file = open('setting/setting.txt', 'w')
         stack = Gtk.Stack()
         stack.set_transition_type(Gtk.StackTransitionType.SLIDE_LEFT_RIGHT)
         stack.set_transition_duration(1000)
