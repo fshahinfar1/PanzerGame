@@ -99,7 +99,7 @@ class MyWindow(Gtk.Window):
             entry = self.rows[i+1].get_children()[2]
             name = entry.get_text()
             self.setting_file.write("name: {\"%s\"}\n" % name)
-            img = "images/panzer2.png"
+            img = "images/panzer{0}.png".format(i+1)
             self.setting_file.write("image: {\"%s\"}\n" % img)
             self.setting_file.write("end\n##\n")
         self.setting_file.close()

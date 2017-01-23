@@ -22,7 +22,7 @@ class Player(object):
         player_list.append(self)
 
     def ready_panzer(self, pos, dire, clock, room):
-        self.panzer = panzer_obj.Panzer(pos, self.panzer_img, (54, 54), clock, self, room, dire)
+        self.panzer = panzer_obj.Panzer(pos, self.panzer_img, (74, 54), clock, self, room, dire)
 
     def destroy(self):
         player_list.remove(self)
