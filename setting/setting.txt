@@ -2,15 +2,15 @@ player_num: {2}
 ##
 #player_0:
 start
-control: {"KeySetTwo"}
-name: {"Player1"}
-image: {"images/panzer.png"}
+control: {"KeySetOne"}
+name: {"Farbod"}
+image: {"images/panzer1.png"}
 end
 ##
 #player_1:
 start
-control: {"JoystickSetOne"; 0}
-name: {"Player2"}
+control: {"KeySetTwo"}
+name: {"Farnad"}
 image: {"images/panzer2.png"}
 end
 ##
