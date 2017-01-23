@@ -25,44 +25,40 @@ s.setblocking(0)
 
 
 class MultiRoom(room_obj.Room):
-    def __init__(self, screen, clock, map):
-        room_obj.Room.__init__(self, screen, 'Test', clock=clock, caption="Panzer Game")  # create room with name Test
-        # walls/ collectable objects/ ...
-        map_obj.load(map)
-        # Create self player
-        key_set = key_map_sets.KeySetTwo()
-        img = pygame.image.load('images/panzer2.png').convert_alpha()
-        p = player_class.Player('KeySetTwo', key_set.control, key_set.key_map, "p2", img)
+    def __init__(self, screen, clock):
+        room_obj.Room.__init__(self, screen, 'MultiRoom', clock=clock, caption="PanzerGame")
         # key_set = key_map_sets.KeySetOne()
-        # img = pygame.image.load('images/panzer1.png').convert_alpha()
-        # p = player_class.Player('KeySetOne', key_set.control, key_set.key_map, "p1", img)
-        tank_start_point = map_obj.get_start_points(map)
-        idx = randrange(len(tank_start_point))
-        pos = tank_start_point[idx][0]
-        dire = tank_start_point[idx][1]
-        del tank_start_point[idx]
-        p.ready_panzer(pos, dire, self.clock, self)
-        # End Creating/ connect to server
-        message2 = '("' + p.name + '",' + str(tuple(p.get_panzer().get_position())) + ',' + str(
-            p.get_panzer().direction) + ',"' + p.key_set + '")'
+        # p = player_class.Player('KeySetOne', key_set.control, key_set.key_map, "p1", None)
+        key_set = key_map_sets.KeySetTwo()
+        p = player_class.Player('KeySetTwo', key_set.control, key_set.key_map, "p2", None)
+        message2 = '("' + p.name + '",'+'"' + p.key_set + '")'
         s.sendto(message2.encode(), server)
-        #
         data = []
+        player_num = 1
         while True:
             try:
                 message = s.recv(1024).decode()
-                self.player_num = int(message[8:9])
+                player_num = int(message[8:9])
                 data = eval(message[9:])
                 break
             except:
                 pass
-        data = [eval(i.decode()) for i in data]
-        for i in range(1, self.player_num):
-            key_set = key_map_sets.control_map[data[i - 1][3]]()
-            player_class.Player(data[i - 1][3], key_set.control, key_set.key_map, data[i][0], img)
-            pos = data[i - 1][1]
-            dire = data[i - 1][2]
-            player = player_class.player_list[i]
+        print(data)
+        # "maps/map{0}.txt".format(data[0][1])
+        # data = [['name', 'key_set_name', 'full_map_add', (pos, dire), img_number], [...], ...]
+        map_address = data[0][2]
+        print(map_address)
+        map_obj.load(map_address)
+        for i in range(0, player_num):
+            img = pygame.image.load('images/panzer{0}.png'.format(data[i][-1])).convert_alpha()
+            if i != player_num-1:
+                key_set = key_map_sets.control_map[data[i][1]]()
+                player = player_class.Player(data[i][1], key_set.control, key_set.key_map, data[i][0], img)
+            else:
+                player = player_class.player_list[0]
+                player.panzer_img = img
+            pos = data[i][3][0]
+            dire = data[i][3][1]
             player.ready_panzer(pos, dire, self.clock, self)
         self.mouse = tools.Mouse()
         self.timer = timer_obj.Timer(3)  # 3 sec
@@ -70,7 +66,6 @@ class MultiRoom(room_obj.Room):
 
     def destroy(self):
         room_obj.Room.destroy(self)
-        # del self.Players
         del self.mouse
         collectable_object.clear()
         collision_tools.clear()
@@ -109,21 +104,24 @@ class MultiRoom(room_obj.Room):
 
     def recv_anything(self):
         try:
-            self.message = s.recv(1024).decode()
-            if 'new' in self.message:
-                self.player_num = int(self.message[8:9])
-                data = eval(self.message[9:])
-                data = [eval(i.decode()) for i in data]
-                if self.player_num > len(player_class.player_list):
-                    key_set = key_map_sets.control_map[data[-1][3]]()
-                    img = pygame.image.load('images/panzer.png').convert_alpha()
-                    a = player_class.Player(data[-1][3], key_set.control, key_set.key_map, data[-1][0], img)
-                    a.ready_panzer(data[-1][1], data[-1][2], self.clock, self)
-            elif 'restart' in self.message:
+            message = s.recv(1024).decode()
+            if 'new' in message:
+                data = eval(message[9:])
+                player_num = int(message[8:9])
+                # data = [eval(i) for i in data]
+                print(data)
+                if player_num > len(player_class.player_list):
+                    key_set = key_map_sets.control_map[data[-1][1]]()
+                    img = pygame.image.load('images/panzer{0}.png'.format(data[-1][-1])).convert_alpha()
+                    pos = data[-1][3][0]
+                    dire = data[-1][3][1]
+                    new_player = player_class.Player(data[-1][1], key_set.control, key_set.key_map, data[-1][0], img)
+                    new_player.ready_panzer(pos, dire, self.clock, self)
+            elif 'restart' in message:
                 self.__init__(self.clock, "maps/map01.txt")
                 return False
             else:
-                data = eval(self.message)
+                data = eval(message)
                 self.keys = data
                 return True
         except:
@@ -172,7 +170,6 @@ class MultiRoom(room_obj.Room):
                 # fire
                 if self.check_hold_other(player.key_map['fire']):
                     player.get_panzer().key_space()
-
             elif player.controller_type() == "joystick":
                 # turn
                 hat_num = player.get_controller().get_hat(0)
@@ -190,13 +187,11 @@ class MultiRoom(room_obj.Room):
                 # fire
                 if player.get_controller().get_button(2):
                     player.get_panzer().key_space()
-
         # mouse
         if self.mouse.is_btn_pressed(1):
             print('left_btn_pressed')
         if self.mouse.is_btn_pressed(2):
             print('right_btn_pressed')
-
         # object loop
         [player.get_panzer().loop() for player in player_class.player_list if not player.killed]
         [load.loop() for load in fire_load.FireLoadObjectsList]
@@ -216,9 +211,12 @@ class MultiRoom(room_obj.Room):
         pygame.display.update()  # update display
 
     def change_map(self):
+
         print("map_changed")
         s.sendto('finish'.encode(), server)
+        [player.destroy() for player in player_class.player_list]
         player_class.player_list.clear()
+        self.destroy()
         flag_restart = True
         while flag_restart:
             flag_restart = self.recv_anything()

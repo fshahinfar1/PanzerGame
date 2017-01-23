@@ -67,7 +67,7 @@ class MainMenuRoom(room_obj.Room):
                     self.goto_next_room()
                     return
                 elif index == 1:
-                    room = MultiRoom(self.screen, self.clock, "maps/map1.txt")
+                    room = MultiRoom(self.screen, self.clock)
                     self.set_next_room(room)
                     self.goto_next_room()
                     return

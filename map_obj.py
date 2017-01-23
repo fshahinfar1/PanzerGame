@@ -81,18 +81,18 @@ def remove_title(string, title):
     :param title: starting title of line
     :return: str
     """
-    return string[len(title)+2:]
+    return string[len(title) + 2:]
 
 
 def find_semi_colon(string, index):
     count = -1
     last_comma = 1
     for i in range(len(string)):
-        if string[i] == ';' or string[i]=='}':
+        if string[i] == ';' or string[i] == '}':
             count += 1
             if count == index:
                 return last_comma, i
-            last_comma = i+1 # it is not simi colon's index. it is next character's index.
+            last_comma = i + 1  # it is not simi colon's index. it is next character's index.
     # if not found
     return -1, -1
 
